@@ -12,7 +12,11 @@ import { jwtDecode } from "jwt-decode";
 
 import { motion, Variants } from "framer-motion";
 import { MoveLeft } from "lucide-react";
-type googleDataType = {
+
+import { login, signup } from "@/gateways/authGatewat";
+import { useAuthStore } from "@/utils/store";
+
+export type userDataType = {
   email: string;
   name: string;
   password: string;
@@ -36,6 +40,7 @@ const formAnimationVarient: Variants = {
 //COMPOENNT
 function Login({ className, ...props }: LoginProps) {
   const { isSignupForm = false, isRegistration = false } = props;
+  const { setAuthStatus } = useAuthStore();
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [openRegesterForm, setopenRegesterForm] = useState<{
@@ -57,27 +62,47 @@ function Login({ className, ...props }: LoginProps) {
     password: openRegesterForm.prevData.password,
   });
 
-  const handleCompleteSignin = useCallback((payload: googleDataType) => {
-    console.log(`%c payload `, "color: orange;border:2px solid cyan", payload);
-  }, []);
+  const handleCompleteSignin = useCallback(
+    async (payload: userDataType) => {
+      let userData = {};
+      switch (true) {
+        case isSignupForm:
+          {
+            const user = await signup(payload);
+            userData = user;
+            setAuthStatus(user);
+          }
+          return;
+
+        default:
+          {
+            const user = await login(payload);
+            userData = user;
+            setAuthStatus(user);
+          }
+          return;
+      }
+    },
+    [isSignupForm, setAuthStatus]
+  );
 
   const onSubmit = useCallback(
-    (
+    async (
       e?: React.SyntheticEvent | any,
       authObj?: any,
       isGoogleLogin: boolean = false
     ) => {
       if (e) e.preventDefault();
       // setIsLoading(true);,
-
-      let googleLoginData: googleDataType = {
+      setIsLoading(true);
+      let googleLoginData: userDataType = {
         name: "",
         email: "",
         password: "",
       };
 
       if (isGoogleLogin) {
-        const decodedata: googleDataType = jwtDecode(authObj.credential);
+        const decodedata: userDataType = jwtDecode(authObj.credential);
         googleLoginData.password = decodedata.sub || "";
         googleLoginData.name = decodedata.name;
         googleLoginData.email = decodedata.email;
@@ -100,8 +125,8 @@ function Login({ className, ...props }: LoginProps) {
         return;
       }
 
-      handleCompleteSignin(googleLoginData);
-
+      await handleCompleteSignin(googleLoginData);
+      setIsLoading(false);
       //further login steps
     },
     [
@@ -215,7 +240,11 @@ function Login({ className, ...props }: LoginProps) {
                     disabled={isLoading}
                   />
                 </div>
-                <Button variant={"stylish"} disabled={isLoading}>
+                <Button
+                  variant={"stylish"}
+                  disabled={isLoading}
+                  className="flex items-center"
+                >
                   {isLoading && (
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                   )}
@@ -238,14 +267,18 @@ function Login({ className, ...props }: LoginProps) {
                 </span>
               </div>
             </div>
-            <GoogleLogin
-              onSuccess={(credentialResponse) => {
-                onSubmit(null, credentialResponse, true);
-              }}
-              onError={() => {
-                console.log("Login Failed");
-              }}
-            />
+            <div
+              style={isLoading ? { pointerEvents: "none", opacity: "50%" } : {}}
+            >
+              <GoogleLogin
+                onSuccess={(credentialResponse) => {
+                  onSubmit(null, credentialResponse, true);
+                }}
+                onError={() => {
+                  console.log("Login Failed");
+                }}
+              />
+            </div>
           </>
         )}
         {/* SHOP REGESTER FORM  */}
