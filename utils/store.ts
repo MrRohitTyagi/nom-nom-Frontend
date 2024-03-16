@@ -1,16 +1,15 @@
 import { create } from "zustand";
-import { getToken } from "./cookie";
-import { getUser } from "@/gateways/authGatewat";
+import { deleteToken, getToken } from "./cookie";
+import { getUser } from "@/gateways/authGateway";
 
-type userType =
-  | {
-      _id: string;
-      name: string;
-      email: string;
-      isDarkTheme: boolean;
-      createdAT: string;
-    }
-  | {};
+export type userType = {
+  _id: string;
+  name: string;
+  email: string;
+  picture: string;
+  isDarkTheme: boolean;
+  createdAT: string;
+};
 
 type storeType = {
   user: userType;
@@ -18,12 +17,21 @@ type storeType = {
   isAuthenticated: boolean;
   setAuthStatus: (payload: userType) => void;
   getAuthStatus: () => any;
+  logout: () => void;
 };
 
 export const useAuthStore = create<storeType>((set) => ({
-  user: {},
+  user: {} as userType,
   isLoading: false,
   isAuthenticated: false,
+  logout: () => {
+    deleteToken();
+    set(() => ({
+      isAuthenticated: false,
+      user: {} as userType,
+      isLoading: false,
+    }));
+  },
   setAuthStatus: (userPayload: userType) => {
     set(() => ({
       user: userPayload,
@@ -40,6 +48,7 @@ export const useAuthStore = create<storeType>((set) => ({
     } else {
       const userdata: userType = await getUser();
       set(() => ({
+        isAuthenticated: true,
         user: userdata,
       }));
       user = userdata;

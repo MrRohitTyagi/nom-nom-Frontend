@@ -7,7 +7,6 @@ const useDimension = () => {
 
   useEffect(() => {
     let id: NodeJS.Timeout;
-    console.log("aya", window);
 
     function handleResize() {
       clearTimeout(id);

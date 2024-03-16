@@ -2,7 +2,6 @@
 
 import React from "react";
 import Autocomplete from "react-google-autocomplete";
-console.log("key", process.env.NEXT_PUBLIC_GOOGLE_API_KEY);
 
 const GoogLeAutoComplete = () => {
   return (

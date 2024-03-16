@@ -3,8 +3,13 @@
 import React from "react";
 import { motion, Variants } from "framer-motion";
 import Link from "next/link";
+import { useAuthStore } from "@/utils/store";
+import { Button } from "./ui/button";
+import UserProfile from "./UserProfile";
 
 const Navbar = () => {
+  const { isAuthenticated } = useAuthStore();
+
   return (
     <motion.nav
       variants={varients}
@@ -20,9 +25,17 @@ const Navbar = () => {
         Nom Nom
       </Link>
       <div className="flex flex-row gap-5">
-        <Link href="/partner-with-us">Restaurant regester</Link>
-        <Link href="/login">Login</Link>
-        <Link href="/signup">SignUp</Link>
+        {!isAuthenticated && (
+          <Link href="/partner-with-us">Restaurant regester</Link>
+        )}
+        {!isAuthenticated && <Link href="/login">Login</Link>}
+        {!isAuthenticated && <Link href="/signup">SignUp</Link>}
+
+        {isAuthenticated && (
+          <Button variant={"simple"}>
+            <UserProfile />
+          </Button>
+        )}
       </div>
     </motion.nav>
   );

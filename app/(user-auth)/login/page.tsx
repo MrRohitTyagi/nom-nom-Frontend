@@ -13,7 +13,7 @@ import { jwtDecode } from "jwt-decode";
 import { motion, Variants } from "framer-motion";
 import { MoveLeft } from "lucide-react";
 
-import { login, signup } from "@/gateways/authGatewat";
+import { login, signup } from "@/gateways/authGateway";
 import { useAuthStore } from "@/utils/store";
 
 export type userDataType = {
