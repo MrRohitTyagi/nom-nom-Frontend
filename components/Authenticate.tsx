@@ -5,6 +5,7 @@ import React, { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/utils/store";
 import { getCityName } from "@/gateways/locationGateway";
+import Navbar from "./Navbar";
 
 const Authenticate = ({ children }: { children: React.ReactNode }) => {
   const { getAuthStatus, user, isAuthenticated, isLoading } = useAuthStore();
@@ -35,7 +36,14 @@ const Authenticate = ({ children }: { children: React.ReactNode }) => {
     fetchUser();
   }, [getAuthStatus, router]);
 
-  return isLoading ? <h1>Loading ...</h1> : <div>{children}</div>;
+  return isLoading ? (
+    <h1>Loading ...</h1>
+  ) : (
+    <div>
+      <Navbar />
+      {children}
+    </div>
+  );
 };
 
 export default Authenticate;

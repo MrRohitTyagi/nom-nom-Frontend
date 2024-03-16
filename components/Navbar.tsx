@@ -6,9 +6,17 @@ import Link from "next/link";
 import { useAuthStore } from "@/utils/store";
 import { Button } from "./ui/button";
 import UserProfile from "./UserProfile";
+import { usePathname } from "next/navigation";
 
 const Navbar = () => {
+  const pathname = usePathname();
   const { isAuthenticated } = useAuthStore();
+
+  const showNavbar = ["/partner-with-us", "/signup", "/login", "/"].includes(
+    pathname
+  );
+
+  if (!showNavbar) return null;
 
   return (
     <motion.nav
