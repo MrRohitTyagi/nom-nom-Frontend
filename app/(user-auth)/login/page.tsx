@@ -14,18 +14,7 @@ import { motion, Variants } from "framer-motion";
 import { MoveLeft } from "lucide-react";
 
 import { login, signup } from "@/gateways/authGateway";
-import { useAuthStore } from "@/utils/store";
-
-export type userDataType = {
-  email: string;
-  name: string;
-  password: string;
-
-  shop_id?: string;
-  sub?: string;
-  picture?: string;
-  isOwner?: boolean;
-};
+import { useAuthStore, userType } from "@/utils/store";
 
 interface LoginProps extends React.HTMLAttributes<HTMLDivElement> {}
 interface LoginProps extends Object {
@@ -63,7 +52,7 @@ function Login({ className, ...props }: LoginProps) {
   });
 
   const handleCompleteSignin = useCallback(
-    async (payload: userDataType) => {
+    async (payload: userType) => {
       let userData = {};
       switch (true) {
         case isSignupForm:
@@ -95,14 +84,15 @@ function Login({ className, ...props }: LoginProps) {
       if (e) e.preventDefault();
       // setIsLoading(true);,
       setIsLoading(true);
-      let googleLoginData: userDataType = {
+      let googleLoginData: userType = {
         name: "",
         email: "",
         password: "",
+        picture: "",
       };
 
       if (isGoogleLogin) {
-        const decodedata: userDataType = jwtDecode(authObj.credential);
+        const decodedata: userType = jwtDecode(authObj.credential);
         googleLoginData.password = decodedata.sub || "";
         googleLoginData.name = decodedata.name;
         googleLoginData.email = decodedata.email;

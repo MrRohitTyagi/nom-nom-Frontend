@@ -3,12 +3,16 @@ import { deleteToken, getToken } from "./cookie";
 import { getUser } from "@/gateways/authGateway";
 
 export type userType = {
-  _id: string;
-  name: string;
+  _id?: string;
   email: string;
-  picture: string;
-  isDarkTheme: boolean;
-  createdAT: string;
+  name: string;
+  password: string;
+  isDarkTheme?: boolean;
+  createdAT?: string;
+  shop_id?: string;
+  sub?: string;
+  picture?: string | undefined;
+  isOwner?: boolean;
 };
 
 type storeType = {
