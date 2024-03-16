@@ -15,6 +15,7 @@ import { MoveLeft } from "lucide-react";
 
 import { login, signup } from "@/gateways/authGateway";
 import { useAuthStore, userType } from "@/utils/store";
+import { useRouter } from "next/navigation";
 
 interface LoginProps extends React.HTMLAttributes<HTMLDivElement> {}
 interface LoginProps extends Object {
@@ -28,6 +29,7 @@ const formAnimationVarient: Variants = {
 
 //COMPOENNT
 function Login({ className, ...props }: LoginProps) {
+  const router = useRouter();
   const { isSignupForm = false, isRegistration = false } = props;
   const { setAuthStatus } = useAuthStore();
 
@@ -117,11 +119,13 @@ function Login({ className, ...props }: LoginProps) {
 
       await handleCompleteSignin(googleLoginData);
       setIsLoading(false);
+      router.push("/");
       //further login steps
     },
     [
       handleCompleteSignin,
       isRegistration,
+      router,
       values.email,
       values.name,
       values.password,
