@@ -45,11 +45,23 @@ const Navbar = () => {
       animate={{ scale: 1, opacity: 1 }}
     >
       <LogIn size={20} />
-      <Link href="/login" className="font-semibold leading-6 text-gray-900">
+      <Link
+        onClick={() => {
+          setisOpen(false);
+        }}
+        href="/login"
+        className="font-semibold leading-6 text-gray-900"
+      >
         Log in
       </Link>
       {" / "}
-      <Link href="/signup" className="font-semibold leading-6 text-gray-900">
+      <Link
+        onClick={() => {
+          setisOpen(false);
+        }}
+        href="/signup"
+        className="font-semibold leading-6 text-gray-900"
+      >
         Sign up
       </Link>
     </motion.div>
