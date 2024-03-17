@@ -4,10 +4,7 @@ import React, { useEffect } from "react";
 
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/utils/store";
-import { getCityNameFromCoords } from "@/gateways/locationGateway";
 import Navbar from "./Navbar";
-import Map from "./MapComponent";
-import Footer from "./Footer";
 
 const Authenticate = ({ children }: { children: React.ReactNode }) => {
   const { getAuthStatus, user, isLoading } = useAuthStore();
@@ -35,7 +32,6 @@ const Authenticate = ({ children }: { children: React.ReactNode }) => {
     <div>
       <Navbar />
       {children}
-      <Footer />
     </div>
   );
 };
