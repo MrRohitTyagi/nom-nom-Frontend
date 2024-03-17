@@ -25,7 +25,7 @@ const Navbar = () => {
   if (!showNavbar) return null;
 
   const logoTag = (
-    <Image width={100} height={100} src={logo} alt="logo" className="rounded" />
+    <Image width={120} height={120} src={logo} alt="logo" className="rounded" />
   );
   const restrauntRegester = isAuthenticated ? null : (
     <motion.button
