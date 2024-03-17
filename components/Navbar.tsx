@@ -29,6 +29,9 @@ const Navbar = () => {
   );
   const restrauntRegester = isAuthenticated ? null : (
     <motion.button
+      onClick={() => {
+        setisOpen(false);
+      }}
       className="text-1xl font-semibold leading-6 text-gray-900 flex flex-row gap-2 items-center"
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}

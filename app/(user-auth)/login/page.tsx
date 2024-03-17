@@ -114,6 +114,7 @@ function Login({ className, ...props }: LoginProps) {
           prevData: googleLoginData,
           step: 1,
         });
+        setIsLoading(false);
         return;
       }
 
