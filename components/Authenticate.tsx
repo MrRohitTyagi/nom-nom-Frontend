@@ -4,8 +4,9 @@ import React, { useEffect } from "react";
 
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/utils/store";
-import { getCityName } from "@/gateways/locationGateway";
+import { getCityNameFromCoords } from "@/gateways/locationGateway";
 import Navbar from "./Navbar";
+import Map from "./MapComponent";
 
 const Authenticate = ({ children }: { children: React.ReactNode }) => {
   const { getAuthStatus, user, isAuthenticated, isLoading } = useAuthStore();
@@ -20,7 +21,7 @@ const Authenticate = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     window.navigator.geolocation.getCurrentPosition((data) => {
       console.log(data);
-      getCityName(data.coords);
+      getCityNameFromCoords(data.coords);
     });
   }, []);
 
@@ -37,7 +38,10 @@ const Authenticate = ({ children }: { children: React.ReactNode }) => {
   }, [getAuthStatus, router]);
 
   return isLoading ? (
-    <h1>Loading ...</h1>
+    <>
+      <h1>Loading ...</h1>
+      {/* <Map /> */}
+    </>
   ) : (
     <div>
       <Navbar />
