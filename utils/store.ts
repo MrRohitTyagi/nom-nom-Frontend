@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { deleteToken, getToken } from "./cookie";
-import { getUser } from "@/gateways/authGateway";
+import { updateUser, getUser } from "@/gateways/userGateway";
 
 export type userType = {
   _id?: string;
@@ -26,6 +26,7 @@ type storeType = {
   isAuthenticated: boolean;
   setAuthStatus: (payload: userType) => void;
   getAuthStatus: () => any;
+  dynamicUserUpdate: (payload: any) => any;
   logout: () => void;
 };
 
@@ -47,6 +48,14 @@ export const useAuthStore = create<storeType>((set) => ({
       isAuthenticated: true,
       isLoading: false,
     }));
+  },
+  dynamicUserUpdate: (payload: any) => {
+    set((store: storeType) => {
+      return {
+        user: { ...store.user, ...payload },
+      };
+    });
+    updateUser(payload);
   },
   getAuthStatus: async () => {
     let user;

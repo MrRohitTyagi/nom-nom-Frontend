@@ -9,8 +9,8 @@ import Navbar from "./Navbar";
 import Map from "./MapComponent";
 
 const Authenticate = ({ children }: { children: React.ReactNode }) => {
-  const { getAuthStatus, user, isAuthenticated, isLoading } = useAuthStore();
-
+  const { getAuthStatus, user, isLoading } = useAuthStore();
+  console.log(`%cuser `, "color: red;border:2px dotted red", user);
   const router = useRouter();
 
   useEffect(() => {

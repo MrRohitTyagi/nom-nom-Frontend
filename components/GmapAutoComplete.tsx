@@ -22,9 +22,11 @@ import { Button } from "./ui/button";
 export function GmapAutoComplete({
   title = "Click to select a address",
   onSave,
+  alreadyHaveAddress = false,
 }: {
   onSave: (loc: suggestionType) => void;
   title?: string;
+  alreadyHaveAddress?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const [suggestions, setsuggestions] = useState<suggestionType[]>([]);
@@ -55,7 +57,7 @@ export function GmapAutoComplete({
       setOpen(false);
       router.push("/welcome");
     },
-    [onSave]
+    [onSave, router]
   );
 
   const autoSelect = useCallback(() => {
@@ -70,17 +72,17 @@ export function GmapAutoComplete({
         }
       );
     });
-  }, [onSave]);
+  }, [onSave, router]);
 
   return (
-    <>
+    <div className="">
       <Button
-        className="flex flex-row gap-2 "
+        className="flex flex-row gap-2 text-ellipsis"
         variant={"outline"}
         onClick={() => setOpen(true)}
       >
         <LocateIcon size={20} />
-        {title}
+        <h2>{title}</h2>
       </Button>
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput
@@ -121,7 +123,7 @@ export function GmapAutoComplete({
             })}
         </CommandList>
       </CommandDialog>
-    </>
+    </div>
   );
 }
 

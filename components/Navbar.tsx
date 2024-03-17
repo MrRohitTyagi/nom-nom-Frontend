@@ -6,20 +6,17 @@ import Link from "next/link";
 import { useAuthStore } from "@/utils/store";
 import { Button } from "./ui/button";
 import UserProfile from "./UserProfile";
-import { usePathname } from "next/navigation";
-import useDimension from "@/hooks/useDimension";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 
 import logo from "@/assets/logo.png";
-import { LogOut } from "lucide-react";
+import { LogIn, LogOut, Store, User } from "lucide-react";
 
 const Navbar = () => {
   const [isOpen, setisOpen] = useState<boolean>(false);
-  const { isMobileView } = useDimension();
-  console.log(isMobileView);
-
+  const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, logout } = useAuthStore();
 
   const showNavbar = ["/partner-with-us", "/signup", "/login", "/"].includes(
     pathname
@@ -32,30 +29,27 @@ const Navbar = () => {
   );
   const restrauntRegester = isAuthenticated ? null : (
     <motion.button
-      className="text-sm font-semibold leading-6 text-gray-900"
+      className="text-1xl font-semibold leading-6 text-gray-900 flex flex-row gap-2 items-center"
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
     >
+      <Store size={20} />{" "}
       <Link href="/partner-with-us">Regester your restraunt</Link>
     </motion.button>
   );
 
   const loginSignup = (
     <motion.div
+      className="text-1xl flex flex-row gap-2 items-center"
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
     >
-      <Link
-        href="/login"
-        className="text-sm font-semibold leading-6 text-gray-900"
-      >
+      <LogIn size={20} />
+      <Link href="/login" className="font-semibold leading-6 text-gray-900">
         Log in
       </Link>
       {" / "}
-      <Link
-        href="/signup"
-        className="text-sm font-semibold leading-6 text-gray-900"
-      >
+      <Link href="/signup" className="font-semibold leading-6 text-gray-900">
         Sign up
       </Link>
     </motion.div>
@@ -69,7 +63,7 @@ const Navbar = () => {
       className="bg-white"
     >
       <nav
-        className="mx-auto flex max-w-7xl items-center justify-between p-3 lg:px-8"
+        className="px-[1rem] flex  w-full items-center justify-between p-3 lg:px-8"
         aria-label="Global"
       >
         <div className="flex lg:flex-1">
@@ -114,7 +108,7 @@ const Navbar = () => {
       {isOpen && (
         <motion.div className="lg:hidden" role="dialog" aria-modal="true">
           <div className="divide-y fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
-            <div className="flex items-center justify-between px-6 py-3 ">
+            <div className="flex items-center justify-between px-3 py-3 ">
               <span className="sr-only">Your Company</span>
               {logoTag}
 
@@ -141,9 +135,34 @@ const Navbar = () => {
               </button>
             </div>
             <div className="flow-root px-6 py-3 ">
-              <div className=" divide-gray-500/10">
-                <div className="space-y-2 py-3">{restrauntRegester}</div>
-                <div className="py-3">{loginSignup}</div>
+              <div className="divide-gray-500/10 text-2xl">
+                {!isAuthenticated && (
+                  <div className="py-3">{restrauntRegester}</div>
+                )}
+                <div className="py-3 flex flex-col gap-2 divide-y">
+                  {isAuthenticated ? (
+                    <button
+                      className="py-2"
+                      onClick={() => router.push("/profile")}
+                    >
+                      <div className="flex flex-row gap-2 items-center">
+                        <User size={24} />
+                        <h1 className="text-2xl">Profile</h1>
+                      </div>
+                    </button>
+                  ) : (
+                    loginSignup
+                  )}
+
+                  {isAuthenticated && (
+                    <button className="py-2" onClick={logout}>
+                      <div className="flex flex-row gap-2 items-center">
+                        <LogOut size={24} />
+                        <h1 className="text-2xl">Logout</h1>
+                      </div>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           </div>

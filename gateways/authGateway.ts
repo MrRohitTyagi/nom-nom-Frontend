@@ -13,7 +13,3 @@ export async function signup(payload: userType) {
   setToken(data.token);
   return data.user;
 }
-export async function getUser() {
-  const { data } = await axiosinstance.get(`${baseURL}/get`);
-  return data.user;
-}
