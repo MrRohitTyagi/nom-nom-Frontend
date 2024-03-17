@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/command";
 import { useCallback, useEffect, useState } from "react";
 import { LocateFixed, LocateIcon } from "lucide-react";
-import { useRouter } from "next/navigation";
 
 import {
   getCityNameFromCoords,
@@ -18,6 +17,7 @@ import {
   suggestionType,
 } from "@/gateways/locationGateway";
 import { Button } from "./ui/button";
+import { useAuthStore } from "@/utils/store";
 
 export function GmapAutoComplete({
   title = "Click to select a address",
@@ -28,11 +28,11 @@ export function GmapAutoComplete({
   title?: string;
   alreadyHaveAddress?: boolean;
 }) {
+  const { user } = useAuthStore();
   const [open, setOpen] = useState(false);
   const [suggestions, setsuggestions] = useState<suggestionType[]>([]);
-  const [value, setvalue] = useState("");
+  const [value, setvalue] = useState(user?.address?.display_name || "");
   const [isloading, setisloading] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     let id: NodeJS.Timeout | undefined;
@@ -55,9 +55,9 @@ export function GmapAutoComplete({
       setvalue("");
       onSave(loc);
       setOpen(false);
-      router.push("/welcome");
+      // router.push("/welcome");
     },
-    [onSave, router]
+    [onSave]
   );
 
   const autoSelect = useCallback(() => {
@@ -68,11 +68,11 @@ export function GmapAutoComplete({
           setvalue("");
           onSave({ display_name, lat, lon });
           setOpen(false);
-          router.push("/welcome");
+          // router.push("/welcome");
         }
       );
     });
-  }, [onSave, router]);
+  }, [onSave]);
 
   return (
     <div className="">

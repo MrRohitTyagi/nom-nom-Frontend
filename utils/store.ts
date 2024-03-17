@@ -13,11 +13,16 @@ export type userType = {
   sub?: string;
   picture?: string | undefined;
   isOwner?: boolean;
-  address?: {
-    display_name: string;
-    lat: number;
-    lon: number;
-  };
+  address?: addressType;
+};
+export type addressType = {
+  city?: string;
+  state?: string;
+  postcode?: string;
+  country?: string;
+  display_name?: string;
+  lat?: number;
+  lon?: number;
 };
 
 type storeType = {
@@ -51,11 +56,11 @@ export const useAuthStore = create<storeType>((set) => ({
   },
   dynamicUserUpdate: (payload: any) => {
     set((store: storeType) => {
+      if (store?.user?._id) updateUser(payload);
       return {
         user: { ...store.user, ...payload },
       };
     });
-    updateUser(payload);
   },
   getAuthStatus: async () => {
     let user;

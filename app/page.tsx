@@ -1,21 +1,37 @@
 "use client";
 import Image from "next/image";
-import homebackgroundimage from "@/assets/food-bg.jpg";
-import GmapAutoComplete from "@/components/GmapAutoComplete";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
+
+import {
+  getCityNameFromCoords,
+  suggestionType,
+} from "@/gateways/locationGateway";
 import { BannerImageVarient, headingVarient } from "./varients";
-import { suggestionType } from "@/gateways/locationGateway";
-import { useAuthStore } from "@/utils/store";
-import { Button } from "@/components/ui/button";
+import { addressType, useAuthStore } from "@/utils/store";
 import Footer from "@/components/Footer";
+import homebackgroundimage from "@/assets/food-bg.jpg";
 import PopularCitiesPage from "@/components/PopularCitiesPage";
+import GmapAutoComplete from "@/components/GmapAutoComplete";
+import { useCallback } from "react";
 
 export default function Home() {
+  const router = useRouter();
   const { dynamicUserUpdate, user } = useAuthStore();
 
-  const handlelocationSelect = (location: suggestionType) => {
-    dynamicUserUpdate({ address: location });
-  };
+  const handlelocationSelect = useCallback(
+    async (location: suggestionType) => {
+      const address = await getCityNameFromCoords({
+        latitude: location.lat,
+        longitude: location.lon,
+      });
+      const finalAddressObj: addressType = address.address;
+
+      dynamicUserUpdate({ address: { ...finalAddressObj, ...location } });
+      router.push(finalAddressObj?.state || "/");
+    },
+    [dynamicUserUpdate, router]
+  );
 
   return (
     <div className="banner-box flex items-center flex-col w-full text-center space-y-5">
