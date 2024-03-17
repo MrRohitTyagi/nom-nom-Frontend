@@ -3,6 +3,11 @@ import axios from "axios";
 // const baseUrl = "https://nominatim.openstreetmap.org";
 const baseUrl = "https://us1.locationiq.com";
 const apiKey = process.env.NEXT_PUBLIC_GEOLOCATION_KEY; // Replace 'YOUR_API_KEY' with your LocationIQ API key
+export type suggestionType = {
+  display_name: string;
+  lat: number;
+  lon: number;
+};
 
 {
   // export async function getCityNameFromCoords({
@@ -70,15 +75,13 @@ export async function getLocationSuggestions(query: string) {
     const response = await axios.get(url, {
       params: {
         key: apiKey,
-        countrycodes: "IN",
         q: query,
         format: "json",
       },
     });
-    console.log("getLocationSuggestions", response.data);
 
     // Extract location suggestions from the response
-    const suggestions = response.data.map((item: any) => ({
+    const suggestions = response.data.map((item: suggestionType) => ({
       display_name: item.display_name,
       lat: item.lat,
       lon: item.lon,
@@ -86,7 +89,7 @@ export async function getLocationSuggestions(query: string) {
     return suggestions;
   } catch (error) {
     console.error("Error fetching location suggestions:", error);
-    return null;
+    return [];
   }
 }
 export async function getCityNameFromCoords({
@@ -108,18 +111,7 @@ export async function getCityNameFromCoords({
       },
     });
 
-    console.log(
-      `%c getCityNameFromCoords `,
-      "color: aqua;border:2px solid darkorange",
-      response.data
-    );
-    // Extract location information from the response
-    const location = {
-      display_name: response.data.display_name,
-      address: response.data.address,
-      // You can include additional information here based on your needs
-    };
-    return location;
+    return response.data;
   } catch (error) {
     console.error("Error fetching location:", error);
     return null;

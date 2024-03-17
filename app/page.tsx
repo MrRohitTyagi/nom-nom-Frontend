@@ -1,13 +1,21 @@
 "use client";
 import Image from "next/image";
 import homebackgroundimage from "@/assets/home-background-image.jpg";
-// import GoogLeAutoComplete from "@/components/GoogLeAutoComplete";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import GmapAutoComplete from "@/components/GmapAutoComplete";
 import { motion } from "framer-motion";
 import { BannerImageVarient, headingVarient } from "./varients";
+import { suggestionType } from "@/gateways/locationGateway";
+import { useAuthStore } from "@/utils/store";
 
 export default function Home() {
+  const {} = useAuthStore();
+  const handlelocationSelect = (location: suggestionType) => {
+    console.log(
+      `%c location `,
+      "color: green;border:1px solid green",
+      location
+    );
+  };
   return (
     <div className="banner-box flex items-center flex-col relative w-full text-center space-y-5">
       <motion.div
@@ -41,12 +49,8 @@ export default function Home() {
       </div>
 
       <div className="flex w-full max-w-sm items-center space-x-2 search-bar justify-center">
-        {/* <GoogLeAutoComplete /> */}
-        <Input type="email" placeholder="Search your location..." />
-        <Button type="submit">Search</Button>
+        <GmapAutoComplete onSave={handlelocationSelect} />
       </div>
-
-      <h1 className="text-3xl">Popular locations in India</h1>
     </div>
   );
 }

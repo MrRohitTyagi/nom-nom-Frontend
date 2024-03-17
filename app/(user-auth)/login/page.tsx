@@ -11,7 +11,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 
 import { motion, Variants } from "framer-motion";
-import { MoveLeft } from "lucide-react";
+import { ArrowRight, MoveLeft } from "lucide-react";
 
 import { login, signup } from "@/gateways/authGateway";
 import { useAuthStore, userType } from "@/utils/store";
@@ -140,7 +140,7 @@ function Login({ className, ...props }: LoginProps) {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="Login-form-wrapper h-screen w-screen justify-center flex items-center"
+      className="Login-form-wrapper mt-[10vh] justify-center flex items-center"
     >
       <div
         className={cn(
@@ -161,7 +161,7 @@ function Login({ className, ...props }: LoginProps) {
           ) : (
             <div></div>
           )}
-          <h2 className="text-center underline capitalize">
+          <h2 className="text-center capitalize">
             {isRegistration
               ? openRegesterForm.step === 0
                 ? "Owner Details"
@@ -242,11 +242,15 @@ function Login({ className, ...props }: LoginProps) {
                   {isLoading && (
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                   )}
-                  {isRegistration
-                    ? "Enter restraunt Details"
-                    : isSignupForm
-                    ? "SignUp"
-                    : "Login"}
+                  {isRegistration ? (
+                    <div className="flex items-center gap-1">
+                      Enter restraunt Details <ArrowRight size={20} />
+                    </div>
+                  ) : isSignupForm ? (
+                    "SignUp"
+                  ) : (
+                    "Login"
+                  )}
                   <BottomGradient />
                 </Button>
               </div>

@@ -10,20 +10,8 @@ import Map from "./MapComponent";
 
 const Authenticate = ({ children }: { children: React.ReactNode }) => {
   const { getAuthStatus, user, isAuthenticated, isLoading } = useAuthStore();
-  console.log(
-    `%c  user, isAuthenticated, isLoading  `,
-    "color: aqua;border:2px solid darkorange",
-    { user, isAuthenticated, isLoading }
-  );
 
   const router = useRouter();
-
-  useEffect(() => {
-    window.navigator.geolocation.getCurrentPosition((data) => {
-      console.log(data);
-      getCityNameFromCoords(data.coords);
-    });
-  }, []);
 
   useEffect(() => {
     async function fetchUser() {
