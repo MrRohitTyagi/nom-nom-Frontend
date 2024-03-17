@@ -38,7 +38,7 @@ const PopularCitiesPage = () => {
 const Banner = ({ name }: { name: string }) => {
   return (
     <Link
-      href={`/${name}`}
+      href={`/${name}`.toLowerCase()}
       className="country-box h-10 sm:w-50 md:w-50  border-2 
                  border-gray-400 flex flex-row
                  items-center justify-center shadow-md rounded-lg px-4 py-2

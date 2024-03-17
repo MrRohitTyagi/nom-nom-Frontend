@@ -35,10 +35,10 @@ const Footer = () => {
           Jobs
         </Link>
         <Link
-          href="partners"
+          href="contact"
           className="cursor-pointer text-xl opacity-80 text-indigo-900"
         >
-          Partners
+          Contact
         </Link>
       </div>
       <div className="2st-row space-x-4 flex flex-row gap-2 justify-center items-center">
