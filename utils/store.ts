@@ -13,6 +13,11 @@ export type userType = {
   sub?: string;
   picture?: string | undefined;
   isOwner?: boolean;
+  address?: {
+    display_name: string;
+    lat: number;
+    lon: number;
+  };
 };
 
 type storeType = {
