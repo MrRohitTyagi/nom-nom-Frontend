@@ -1,17 +1,43 @@
-"use client";
-
-import { useShopStore } from "@/utils/store";
 import React from "react";
+import StepperForm from "./StepperForm";
 
 const ManageRestraunt = () => {
-  const { shop } = useShopStore();
-  console.log(`%c shop `, "color: green;border:1px solid green", shop);
+  const steps = [
+    <FirstStep key={1} />,
+    <SecondStep key={2} />,
+    <ThirdStep key={3} />,
+  ];
   return (
-    <div className="bg-blue-500 sm:bg-green-500 md:bg-yellow-500 lg:bg-red-500 xl:bg-purple-500">
-      Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aperiam,
-      voluptate deleniti? Velit voluptatem atque obcaecati expedita consequuntur
-      nesciunt voluptate aut excepturi temporibus fuga, non optio beatae debitis
-      ab nulla voluptas?
+    <div>
+      <StepperForm steps={steps} startFrom={0} />
+    </div>
+  );
+};
+const FirstStep = () => {
+  return (
+    <div className="first flex flex-col gap-4">
+      <h1 className="opacity-70 text-center text-2xl">Restraunt information</h1>
+      <div className="main-content"></div>
+    </div>
+  );
+};
+const SecondStep = () => {
+  return (
+    <div className="first flex flex-col gap-4">
+      <h1 className="opacity-70 text-center text-2xl">
+        Menu, Prices, Food images
+      </h1>
+      <div className="main-content"></div>
+    </div>
+  );
+};
+const ThirdStep = () => {
+  return (
+    <div className="first flex flex-col gap-4">
+      <h1 className="opacity-70 text-center text-2xl">
+        Additional Information
+      </h1>
+      <div className="main-content"></div>
     </div>
   );
 };
