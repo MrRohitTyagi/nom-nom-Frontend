@@ -1,12 +1,11 @@
 "use client";
 
-import React, { Dispatch, SetStateAction, useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { motion, Variants } from "framer-motion";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "next/navigation";
 import { ArrowRight, MoveLeft } from "lucide-react";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Icons } from "@/components/icons";
@@ -308,30 +307,34 @@ function Login({ className, ...props }: LoginProps) {
                   )}
                 </div>
               </motion.div>
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t" />
-                </div>
-                <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
-                    Or continue with
-                  </span>
-                </div>
-              </div>
-              <div
-                style={
-                  isLoading ? { pointerEvents: "none", opacity: "50%" } : {}
-                }
-              >
-                <GoogleLogin
-                  onSuccess={(credentialResponse) => {
-                    onSubmit(null, credentialResponse, true);
-                  }}
-                  onError={() => {
-                    console.log("Login Failed");
-                  }}
-                />
-              </div>
+              {!isRegistration && (
+                <>
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-background px-2 text-muted-foreground">
+                        Or continue with
+                      </span>
+                    </div>
+                  </div>
+                  <div
+                    style={
+                      isLoading ? { pointerEvents: "none", opacity: "50%" } : {}
+                    }
+                  >
+                    <GoogleLogin
+                      onSuccess={(credentialResponse) => {
+                        onSubmit(null, credentialResponse, true);
+                      }}
+                      onError={() => {
+                        console.log("Login Failed");
+                      }}
+                    />
+                  </div>
+                </>
+              )}
             </>
           )}
           {/* SHOP REGESTER FORM  */}
