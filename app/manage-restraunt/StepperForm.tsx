@@ -41,23 +41,15 @@ const StepperForm = ({
   const [currentStep, setcurrentStep] = useState<number>(startFrom);
 
   const { shop } = useShopStore();
-  const { breakpoint, lg, md, sm, x2l, xl } = useDimension();
-
-  console.log(
-    `%c  breakpoint, lg, md, sm, x2l, xl `,
-    "color: red;border:2px dotted red",
-    { breakpoint, lg, md, sm, x2l, xl, steps }
-  );
-
+  const { breakpoint } = useDimension();
   const CurrentContent = steps[currentStep];
 
   console.log(`%c shop `, "color: green;border:1px solid green", shop);
   return (
     <div className={`${getCssByBreakpoint(breakpoint)} gap-4 flex flex-col`}>
       <div className="top-steps flex flex-row gap-3 items-center">
-        {steps.map((step, i) => {
+        {steps.map((_, i) => {
           const isLastStep = i === steps.length - 1;
-          console.log(isLastStep);
 
           return (
             <>

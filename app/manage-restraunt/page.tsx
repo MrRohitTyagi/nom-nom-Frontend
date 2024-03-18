@@ -2,43 +2,6 @@
 
 import React, { useEffect } from "react";
 import StepperForm from "./StepperForm";
-
-type validationType = {
-  name: string;
-  desc: string;
-  address?: {
-    city?: string;
-    state?: string;
-    postcode?: string;
-    country?: string;
-  };
-};
-const zodSchema = z.object({});
-const ManageRestraunt = () => {
-  const form = useForm<validationType>({
-    resolver: zodResolver(zodSchema),
-  });
-  useEffect(() => {
-    console.log("form=>>>>>>>>>>>>>", form.getValues());
-  }, [form]);
-
-  const steps = [
-    <FirstStep key={1} form={form} />,
-    <SecondStep key={2} form={form} />,
-    <ThirdStep key={3} form={form} />,
-  ];
-
-  function onSubmit(e: any) {
-    console.log(e);
-  }
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="pb-20 pt-10">
-        <StepperForm steps={steps} startFrom={0} />
-      </form>
-    </Form>
-  );
-};
 import {
   Accordion,
   AccordionContent,
@@ -51,6 +14,7 @@ import { z } from "zod";
 import {
   Form,
   FormControl,
+  FormErrorLabel,
   FormField,
   FormItem,
   FormLabel,
@@ -58,17 +22,87 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import GmapAutoComplete from "@/components/GmapAutoComplete";
+
+type validationType = {
+  name: string;
+  desc: string;
+  phone: string;
+  tel: string;
+  address?: {
+    city?: string;
+    state?: string;
+    postcode?: string;
+    country?: string;
+  };
+};
+const zodSchema = z.object({
+  name: z
+    .string()
+    .min(3, { message: "Name too short" })
+    .max(20, { message: "Name too Long" }),
+  desc: z.string(),
+  phone: z
+    .string()
+    .min(10, { message: "Invalid Number" })
+    .max(10, { message: "Invalid Number" }),
+  tel: z
+    .string()
+    .min(10, { message: "Invalid Number" })
+    .max(10, { message: "Invalid Number" }),
+  address: z.object({
+    city: z.string().min(1, { message: "city in required" }),
+    state: z.string().min(1, { message: "state in required" }),
+    postcode: z.string().min(1, { message: "postcode in required" }),
+    country: z.string().min(1, { message: "country in required" }),
+  }),
+});
+
+const ManageRestraunt = () => {
+  const form = useForm<validationType>({ resolver: zodResolver(zodSchema) });
+
+  const steps = [
+    <FirstStep key={1} form={form} />,
+    <SecondStep key={2} form={form} />,
+    <ThirdStep key={3} form={form} />,
+  ];
+
+  function onSubmit(e: any) {
+    form.formState.errors;
+    console.log(
+      `%c eonSubmit `,
+      "color: white;border:3px solid white;margin:5px",
+      { e, errors: form.formState.errors }
+    );
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="pb-20 pt-10">
+        <StepperForm steps={steps} startFrom={0} />
+      </form>
+    </Form>
+  );
+};
+
 type formType = UseFormReturn<validationType, any, undefined>;
 const FirstStep = ({ form }: { form: formType }) => {
+  const errors = form.formState.errors;
+  console.log(
+    `%c err `,
+    "color: red;border:3px solid white;margin:5px",
+    errors
+  );
   return (
     <div className="first flex flex-col gap-4 p-4">
       <h1 className="opacity-70 text-center text-2xl">Restraunt information</h1>
       <Accordion type="single">
-        <AccordionItem value="item-1">
+        <AccordionItem value="item-1" className="mt-5 mb-2">
           <AccordionTrigger className="p-4">
             <div className="flex flex-col gap-1">
               <h1 className="text-start text-2xl">Restaurant details</h1>
-              <h1 className="text-start text-xl">Name, address and location</h1>
+              <h1 className="text-start text-sm opacity-50">
+                Name, address and location
+              </h1>
             </div>
           </AccordionTrigger>
           <AccordionContent className="gap-2 flex flex-col p-4">
@@ -128,70 +162,49 @@ const FirstStep = ({ form }: { form: formType }) => {
                 );
               }}
             />
-            <FormLabel className="not-sr-only" htmlFor="desc">
+            <FormLabel className="not-sr-only" htmlFor="address">
               Complete address
             </FormLabel>
-
-            <FormField
-              control={form.control}
-              name="address"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        name="address.country"
-                        placeholder="Country"
-                        type="text"
-                        autoCapitalize="none"
-                        autoCorrect="off"
-                        onChange={field.onChange}
-                        onBlur={field.onBlur}
-                        value={field.value?.country}
-                      />
-                    </FormControl>
-                    <FormControl>
-                      <Input
-                        name="address.city"
-                        placeholder="City"
-                        type="text"
-                        autoCapitalize="none"
-                        autoCorrect="off"
-                        onChange={field.onChange}
-                        onBlur={field.onBlur}
-                        value={field.value?.city}
-                      />
-                    </FormControl>
-                    <FormControl>
-                      <Input
-                        name="address.postcode"
-                        placeholder="Postcode"
-                        type="number"
-                        autoCapitalize="none"
-                        autoCorrect="off"
-                        onChange={field.onChange}
-                        onBlur={field.onBlur}
-                        value={field.value?.postcode}
-                      />
-                    </FormControl>
-                    <FormControl>
-                      <Input
-                        name="address.state"
-                        placeholder="state"
-                        type="text"
-                        autoCapitalize="none"
-                        autoCorrect="off"
-                        onChange={field.onChange}
-                        onBlur={field.onBlur}
-                        value={field.value?.state}
-                      />
-                    </FormControl>
-
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
+            <FormControl>
+              <Input
+                placeholder="Country"
+                type="text"
+                autoCapitalize="none"
+                autoCorrect="off"
+                {...form.register("address.country")}
+              />
+            </FormControl>
+            <FormErrorLabel path="address.country" />
+            <FormControl>
+              <Input
+                placeholder="City"
+                type="text"
+                autoCapitalize="none"
+                autoCorrect="off"
+                {...form.register("address.city")}
+              />
+            </FormControl>
+            <FormErrorLabel path="address.city" />
+            <FormControl>
+              <Input
+                placeholder="Postcode"
+                type="number"
+                autoCapitalize="none"
+                autoCorrect="off"
+                {...form.register("address.postcode")}
+              />
+            </FormControl>
+            <FormErrorLabel path="address.postcode" />
+            <FormControl>
+              <Input
+                placeholder="state"
+                type="text"
+                autoCapitalize="none"
+                autoCorrect="off"
+                {...form.register("address.state")}
+              />
+            </FormControl>
+            <FormErrorLabel path="address.state" />
             <GmapAutoComplete
               onSave={(e: any) => {
                 form.setValue("address", e.address);
@@ -199,6 +212,38 @@ const FirstStep = ({ form }: { form: formType }) => {
               }}
               returnCompleteAddress={true}
             />
+          </AccordionContent>
+        </AccordionItem>
+
+        {/* -----------------------------------------------------------------------2nd accordian ito */}
+
+        <AccordionItem value="item-2" className="mt-5 mb-2">
+          <AccordionTrigger className="p-4">
+            <div className="flex flex-col gap-1">
+              <h1 className="text-start text-2xl">Restaurant Contacts</h1>
+              <h1 className="text-start text-sm opacity-50">
+                Your customers will call on this number for general enquiries
+              </h1>
+            </div>
+          </AccordionTrigger>
+
+          <AccordionContent className="gap-2 flex flex-col p-4">
+            <Input
+              placeholder="123456789"
+              type="number"
+              autoCapitalize="none"
+              autoCorrect="off"
+              {...form.register("phone")}
+            />
+            <FormErrorLabel path="phone" />
+            <Input
+              placeholder="123456789"
+              type="number"
+              autoCapitalize="none"
+              autoCorrect="off"
+              {...form.register("tel")}
+            />
+            <FormErrorLabel path="tel" />
           </AccordionContent>
         </AccordionItem>
       </Accordion>
