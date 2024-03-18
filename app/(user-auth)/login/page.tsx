@@ -65,7 +65,13 @@ function Login({ className, ...props }: LoginProps) {
 
   const handleCompleteSignin = useCallback(
     async (payload: userType) => {
+      console.log(`%c payload `, "color: pink;border:1px solid pink", payload);
       switch (true) {
+        case isRegistration: {
+          //TODO
+          // const user = await signup(payload);
+          // setAuthStatus(user);
+        }
         case isSignupForm:
           {
             const user = await signup(payload);
@@ -81,7 +87,7 @@ function Login({ className, ...props }: LoginProps) {
           return;
       }
     },
-    [isSignupForm, setAuthStatus]
+    [isRegistration, isSignupForm, setAuthStatus]
   );
 
   const onSubmit = useCallback(
@@ -118,13 +124,6 @@ function Login({ className, ...props }: LoginProps) {
           // setvalues(loginData);
         }
 
-        if (isRegistration) {
-          setopenRegesterForm({
-            step: 1,
-          });
-          setIsLoading(false);
-          return;
-        }
         return;
         await handleCompleteSignin(loginData);
         setIsLoading(false);
@@ -134,7 +133,7 @@ function Login({ className, ...props }: LoginProps) {
       }
       //further login steps
     },
-    [form, handleCompleteSignin, isRegistration]
+    [form, handleCompleteSignin]
   );
 
   return (
@@ -282,7 +281,12 @@ function Login({ className, ...props }: LoginProps) {
                     />
                   </div>
                   {isRegistration ? (
-                    <Button variant={"stylish"} className="flex items-center">
+                    <Button
+                      variant={"stylish"}
+                      className="flex items-center"
+                      type="button"
+                      onClick={() => setopenRegesterForm({ step: 1 })}
+                    >
                       <div className="flex items-center gap-1">
                         Enter restraunt Details <ArrowRight size={20} />
                       </div>

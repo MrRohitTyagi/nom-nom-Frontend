@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 export function getSchema(isSignupForm: boolean, isRegistration: boolean) {
-  console.log("{isRegistration}", { isRegistration });
   let schema = null;
 
   if (isRegistration) {
