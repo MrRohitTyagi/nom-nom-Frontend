@@ -1,17 +1,8 @@
 import { z } from "zod";
 
 export function getSchema(isSignupForm: boolean, isRegistration: boolean) {
-  let schema = z.object({
-    email: z
-      .string()
-      .email("Invalid Email")
-      .max(30, "Email too long")
-      .min(6, "Email too short"),
-    password: z
-      .string()
-      .max(20, "Password too long")
-      .min(6, "Password too short"),
-  });
+  console.log("{isRegistration}", { isRegistration });
+  let schema = null;
 
   if (isRegistration) {
     schema = z.object({
@@ -28,8 +19,7 @@ export function getSchema(isSignupForm: boolean, isRegistration: boolean) {
       shop_name: z.string().max(30, "Name too long").min(6, "Name too short"),
       shop_desc: z.string().max(100, "Name too long"),
     });
-  }
-  if (isSignupForm) {
+  } else if (isSignupForm) {
     schema = z.object({
       email: z
         .string()
@@ -41,6 +31,19 @@ export function getSchema(isSignupForm: boolean, isRegistration: boolean) {
         .max(20, "Password too long")
         .min(6, "Password too short"),
       name: z.string().max(20, "Name too long").min(6, "Name too short"),
+    });
+  } else {
+    schema = z.object({
+      email: z
+        .string()
+        .email("Invalid Email")
+        .max(30, "Email too long")
+        .min(6, "Email too short"),
+      password: z
+        .string()
+        .max(20, "Password too long")
+        .min(6, "Password too short"),
+      name: z.string(),
     });
   }
 

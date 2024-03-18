@@ -25,7 +25,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { UseFormReturn, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { getSchema } from "./utils";
 
 interface LoginProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -39,26 +39,28 @@ const formAnimationVarient: Variants = {
 };
 
 //COMPOENNT
-
+type validationType = {
+  name: string;
+  email: string;
+  password: string;
+  shop_name?: string;
+  shop_desc?: string;
+};
 function Login({ className, ...props }: LoginProps) {
   const { isSignupForm = false, isRegistration = false } = props;
 
   const zodSchema = getSchema(isSignupForm, isRegistration);
   const router = useRouter();
   const { setAuthStatus } = useAuthStore();
-  const form = useForm<z.infer<typeof zodSchema>>({
+  const form = useForm<validationType>({
     resolver: zodResolver(zodSchema),
   });
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [openRegesterForm, setopenRegesterForm] = useState<{
-    prevData: { name: string; email: string; password: string };
-    shopValues: { name: string; desc: string };
     step: number;
   }>({
-    prevData: { name: "", email: "", password: "" },
     step: 0,
-    shopValues: { name: "", desc: "" },
   });
 
   const handleCompleteSignin = useCallback(
@@ -118,8 +120,6 @@ function Login({ className, ...props }: LoginProps) {
 
         if (isRegistration) {
           setopenRegesterForm({
-            shopValues: { name: "", desc: "" },
-            prevData: loginData,
             step: 1,
           });
           setIsLoading(false);
@@ -156,7 +156,7 @@ function Login({ className, ...props }: LoginProps) {
             {openRegesterForm.step === 1 ? (
               <button
                 onClick={() => {
-                  setopenRegesterForm((p) => ({ ...p, step: 0 }));
+                  setopenRegesterForm({ step: 0 });
                 }}
               >
                 <MoveLeft size={24} color="black" />
@@ -281,25 +281,27 @@ function Login({ className, ...props }: LoginProps) {
                       }}
                     />
                   </div>
-                  <Button
-                    variant={"stylish"}
-                    disabled={isLoading}
-                    className="flex items-center"
-                  >
-                    {isLoading && (
-                      <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                    )}
-                    {isRegistration ? (
+                  {isRegistration ? (
+                    <Button variant={"stylish"} className="flex items-center">
                       <div className="flex items-center gap-1">
                         Enter restraunt Details <ArrowRight size={20} />
                       </div>
-                    ) : isSignupForm ? (
-                      "SignUp"
-                    ) : (
-                      "Login"
-                    )}
-                    <BottomGradient />
-                  </Button>
+
+                      <BottomGradient />
+                    </Button>
+                  ) : (
+                    <Button
+                      variant={"stylish"}
+                      disabled={isLoading}
+                      className="flex items-center"
+                    >
+                      {isLoading && (
+                        <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      {isSignupForm ? "SignUp" : "Login"}
+                      <BottomGradient />
+                    </Button>
+                  )}
                 </div>
               </motion.div>
               <div className="relative">
@@ -330,132 +332,91 @@ function Login({ className, ...props }: LoginProps) {
           )}
           {/* SHOP REGESTER FORM  */}
           {openRegesterForm.step === 1 && (
-            <ShopRegesterForm
-              form={form}
-              isLoading={isLoading}
-              setIsLoading={setIsLoading}
-            />
+            <motion.div
+              initial="initial"
+              animate="animate"
+              variants={formAnimationVarient}
+            >
+              {/* <h2 className="text-center">{isSignupForm ? "SignUp" : "Login"}</h2> */}
+              <div className="grid gap-2">
+                <div className="grid gap-2 my-2">
+                  <Label className="not-sr-only" htmlFor="shop_name">
+                    Shop name
+                  </Label>
+                  <FormField
+                    control={form.control}
+                    name="shop_name"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              onChange={field.onChange}
+                              onBlur={field.onBlur}
+                              value={field.value}
+                              name="shop_name"
+                              id="shop_name"
+                              placeholder="Enter shop name"
+                              type="text"
+                              autoCapitalize="none"
+                              autoComplete="email"
+                              autoCorrect="off"
+                              disabled={isLoading}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                </div>
+                <div className="grid gap-2 my-2">
+                  <Label className="not-sr-only" htmlFor="shop_desc">
+                    Shop description
+                  </Label>
+                  <FormField
+                    control={form.control}
+                    name="shop_desc"
+                    render={({ field }) => {
+                      return (
+                        <FormItem>
+                          <FormControl>
+                            <Input
+                              onChange={field.onChange}
+                              onBlur={field.onBlur}
+                              value={field.value}
+                              name="shop_desc"
+                              id="shop_desc"
+                              placeholder="Shop description"
+                              type="text"
+                              autoCapitalize="none"
+                              autoCorrect="off"
+                              disabled={isLoading}
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      );
+                    }}
+                  />
+                </div>
+                <Button variant={"stylish"} disabled={isLoading}>
+                  Regester
+                  <BottomGradient />
+                </Button>
+                <h6 className="text-1xl">
+                  Go to restraunt pannel after regesteration to complete the
+                  restraunt setup
+                </h6>
+              </div>
+            </motion.div>
           )}
         </div>
       </motion.form>
     </Form>
   );
 }
-type ShopRegesterFormTypes = {
-  isLoading: boolean;
-  setIsLoading: Dispatch<SetStateAction<boolean>>;
-  form: UseFormReturn<
-    {
-      email: string;
-      shop_name?: string;
-      shop_desc?: string;
-      password: string;
-      name: string;
-    },
-    any,
-    undefined
-  >;
-};
 
-const ShopRegesterForm = ({
-  isLoading,
-  form,
-  setIsLoading,
-}: ShopRegesterFormTypes) => {
-  // REGESTER SHOP
-  function onSubmitShop(e: React.SyntheticEvent) {
-    setIsLoading(true);
-    if (e) e.preventDefault();
-    const finalvalues = form.getValues();
-    console.log(
-      `%c finalvalues ShopRegesterForm`,
-      "color: yellow;border:1px solid lightgreen",
-      finalvalues
-    );
-    setIsLoading(false);
-  }
-  return (
-    <motion.form
-      initial="initial"
-      animate="animate"
-      variants={formAnimationVarient}
-      onSubmit={onSubmitShop}
-    >
-      {/* <h2 className="text-center">{isSignupForm ? "SignUp" : "Login"}</h2> */}
-      <div className="grid gap-2">
-        <div className="grid gap-2 my-2">
-          <Label className="not-sr-only" htmlFor="shop_name">
-            Shop name
-          </Label>
-          <FormField
-            control={form.control}
-            name="shop_name"
-            render={({ field }) => {
-              return (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      onChange={field.onChange}
-                      onBlur={field.onBlur}
-                      value={field.value}
-                      name="shop_name"
-                      id="shop_name"
-                      placeholder="Enter shop name"
-                      type="text"
-                      autoCapitalize="none"
-                      autoComplete="email"
-                      autoCorrect="off"
-                      disabled={isLoading}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-        </div>
-        <div className="grid gap-2 my-2">
-          <Label className="not-sr-only" htmlFor="shop_desc">
-            Shop description
-          </Label>
-          <FormField
-            control={form.control}
-            name="shop_desc"
-            render={({ field }) => {
-              return (
-                <FormItem>
-                  <FormControl>
-                    <Input
-                      onChange={field.onChange}
-                      onBlur={field.onBlur}
-                      value={field.value}
-                      name="shop_desc"
-                      id="shop_desc"
-                      placeholder="Shop description"
-                      type="text"
-                      autoCapitalize="none"
-                      autoCorrect="off"
-                      disabled={isLoading}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              );
-            }}
-          />
-        </div>
-        <Button variant={"stylish"} disabled={isLoading}>
-          Regester
-          <BottomGradient />
-        </Button>
-        <h6 className="text-1xl">
-          Go to restraunt pannel after regesteration to complete the restraunt
-          setup
-        </h6>
-      </div>
-    </motion.form>
-  );
-};
 export default Login;
 const BottomGradient = () => {
   return (
