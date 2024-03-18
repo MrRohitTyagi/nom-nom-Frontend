@@ -107,7 +107,6 @@ export const useShopStore = create<ShopStoreType>((setState) => ({
   shop: {},
   getStoreData: async () => {
     const user: userType = useAuthStore.getState().user;
-    console.log("user", user);
     if (typeof user?.shop === "object" && user?.shop?._id) {
       setState(() => ({ shop: user.shop as shopInterface }));
     }

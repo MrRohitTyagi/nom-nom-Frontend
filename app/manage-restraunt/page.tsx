@@ -68,11 +68,6 @@ const ManageRestraunt = () => {
 
   function onSubmit(e: any) {
     form.formState.errors;
-    console.log(
-      `%c eonSubmit `,
-      "color: white;border:3px solid white;margin:5px",
-      { e, errors: form.formState.errors }
-    );
   }
 
   return (
@@ -86,12 +81,7 @@ const ManageRestraunt = () => {
 
 type formType = UseFormReturn<validationType, any, undefined>;
 const FirstStep = ({ form }: { form: formType }) => {
-  const errors = form.formState.errors;
-  console.log(
-    `%c err `,
-    "color: red;border:3px solid white;margin:5px",
-    errors
-  );
+
   return (
     <div className="first flex flex-col gap-4 p-4">
       <h1 className="opacity-70 text-center text-2xl">Restraunt information</h1>
@@ -208,7 +198,8 @@ const FirstStep = ({ form }: { form: formType }) => {
             <GmapAutoComplete
               onSave={(e: any) => {
                 form.setValue("address", e.address);
-                console.log(e);
+                form.setFocus("address", {});
+                form.setError("address", {});
               }}
               returnCompleteAddress={true}
             />

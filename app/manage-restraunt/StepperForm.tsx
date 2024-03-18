@@ -44,7 +44,6 @@ const StepperForm = ({
   const { breakpoint } = useDimension();
   const CurrentContent = steps[currentStep];
 
-  console.log(`%c shop `, "color: green;border:1px solid green", shop);
   return (
     <div className={`${getCssByBreakpoint(breakpoint)} gap-4 flex flex-col`}>
       <div className="top-steps flex flex-row gap-3 items-center">
@@ -60,7 +59,7 @@ const StepperForm = ({
                  border-gray-400 cursor-pointer shadow-md 
                  transition-all transition-500 ${
                    currentStep >= i ? "bg-green-100 border-green-300" : ""
-                 }`}
+                 } sm: h-8 w-8`}
               >
                 {i + 1}
               </div>

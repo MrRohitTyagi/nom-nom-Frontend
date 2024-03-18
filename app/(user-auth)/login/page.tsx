@@ -70,17 +70,10 @@ function Login({ className, ...props }: LoginProps) {
 
   const handleCompleteSignin = useCallback(
     async (payload: userType) => {
-      console.log(`%c payload `, "color: pink;border:1px solid pink", payload);
       switch (true) {
         case isRegistration: {
-          const { user, shop } = await regesterShop(payload as shopType);
-          console.log(
-            `%c user `,
-            "color: white;border:3px solid white;margin:5px",
-            { user, shop }
-          );
+          const { user } = await regesterShop(payload as shopType);
           setAuthStatus(user);
-
           break;
         }
         case isSignupForm:
@@ -113,7 +106,6 @@ function Login({ className, ...props }: LoginProps) {
     ) => {
       // if (e) e.preventDefault();
       const formValues = form.getValues();
-      console.log("formvalues", formValues);
       try {
         setIsLoading(true);
 

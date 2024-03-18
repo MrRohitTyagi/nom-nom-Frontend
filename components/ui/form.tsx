@@ -167,7 +167,7 @@ const FormMessage = React.forwardRef<
 FormMessage.displayName = "FormMessage";
 const FormErrorLabel = ({ path }: { path: string }) => {
   const {
-    formState: { errors, touchedFields },
+    formState: { errors },
   } = useFormContext();
 
   const fielderror = getFromObj(errors, path)?.message;

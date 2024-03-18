@@ -70,7 +70,6 @@ export function GmapAutoComplete({
 
   const autoSelect = useCallback(() => {
     window.navigator.geolocation.getCurrentPosition((data) => {
-      console.log(data);
       getCityNameFromCoords(data.coords).then(
         ({ display_name, lat, lon }: suggestionType) => {
           setvalue("");
