@@ -14,14 +14,14 @@ const Authenticate = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const user = await getAuthStatus();
-        if (!user?._id) router.push("/");
+        await getAuthStatus();
+        // if (!user?._id && !isLoading) router.push("/");
       } catch (error) {
         console.log(error);
       }
     }
     fetchUser();
-  }, [getAuthStatus, router]);
+  }, [getAuthStatus]);
 
   return isLoading ? (
     <>
