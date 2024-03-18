@@ -9,10 +9,9 @@ export interface userType {
   password: string;
   isDarkTheme?: boolean;
   createdAT?: string;
-  shop_id?: string;
+  shop?: string | shopInterface;
   sub?: string;
   picture?: string | undefined;
-  isOwner?: boolean;
   address?: addressType;
   shop_name?: string;
   shop_desc?: string;
@@ -32,7 +31,7 @@ export type addressType = {
   lon?: number;
 };
 
-type storeType = {
+type userStoreType = {
   user: userType;
   isLoading: boolean;
   isAuthenticated: boolean;
@@ -42,7 +41,7 @@ type storeType = {
   logout: () => void;
 };
 
-export const useAuthStore = create<storeType>((setState) => ({
+export const useAuthStore = create<userStoreType>((setState) => ({
   user: {} as userType,
   isLoading: false,
   isAuthenticated: false,
@@ -62,7 +61,7 @@ export const useAuthStore = create<storeType>((setState) => ({
     }));
   },
   dynamicUserUpdate: (payload: any) => {
-    setState((store: storeType) => {
+    setState((store: userStoreType) => {
       if (store?.user?._id) updateUser(payload);
       return {
         user: { ...store.user, ...payload },
@@ -88,6 +87,29 @@ export const useAuthStore = create<storeType>((setState) => ({
   },
 }));
 
-export const useShopStore = create((setState) => ({
+interface shopInterface {
+  _id?: string;
+  name?: string;
+  desc?: string;
+  picture?: string[];
+  address?: addressType;
+  isOpen?: boolean;
+  timing?: { opensAt: string; closesAt: string };
+  menu?: any; //TODO
+  averageCTC?: string;
+  offers?: { code: String; desc: string; discount: number }[];
+}
+interface ShopStoreType {
+  shop: shopInterface;
+  getStoreData: () => void;
+}
+export const useShopStore = create<ShopStoreType>((setState) => ({
   shop: {},
+  getStoreData: async () => {
+    const user: userType = useAuthStore.getState().user;
+    console.log("user", user);
+    if (typeof user?.shop === "object" && user?.shop?._id) {
+      setState(() => ({ shop: user.shop as shopInterface }));
+    }
+  },
 }));

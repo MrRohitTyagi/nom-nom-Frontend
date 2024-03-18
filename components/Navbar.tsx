@@ -18,9 +18,13 @@ const Navbar = () => {
   const pathname = usePathname();
   const { isAuthenticated, logout } = useAuthStore();
 
-  const showNavbar = ["/partner-with-us", "/signup", "/login", "/"].includes(
-    pathname
-  );
+  const showNavbar = [
+    "/partner-with-us",
+    "/signup",
+    "/login",
+    "/",
+    "/manage-restraunt",
+  ].includes(pathname);
 
   if (!showNavbar) return null;
 

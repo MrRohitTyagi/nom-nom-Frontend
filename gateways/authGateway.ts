@@ -3,7 +3,7 @@ import axiosinstance from "../utils/axiosinstance";
 const baseURL = "/api/v1/user";
 import { setToken } from "@/utils/cookie";
 
-export async function login(payload: userType) {
+export async function login(payload: { email: string; password: string }) {
   const { data } = await axiosinstance.post(`${baseURL}/login`, payload);
   setToken(data.token);
   return data.user;

@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, LogOut, IndianRupee } from "lucide-react";
+import { User, LogOut, Store } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 const UserProfile = () => {
@@ -35,13 +35,18 @@ const UserProfile = () => {
           </div>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem disabled>
-          <div className="flex flex-row gap-2 items-center">
-            <IndianRupee size={16} />
-            <h1>Billing</h1>
-          </div>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
+
+        {user.shop && (
+          <>
+            <DropdownMenuItem onClick={() => router.push("/manage-restraunt")}>
+              <div className="flex flex-row gap-2 items-center">
+                <Store size={16} />
+                <h1>Manage Restraunt</h1>
+              </div>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
 
         {isAuthenticated && (
           <DropdownMenuItem onClick={logout}>

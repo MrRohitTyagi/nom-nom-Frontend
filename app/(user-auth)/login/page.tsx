@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { motion, Variants } from "framer-motion";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
@@ -50,7 +50,7 @@ function Login({ className, ...props }: LoginProps) {
 
   const zodSchema = getSchema(isSignupForm, isRegistration);
   const router = useRouter();
-  const { setAuthStatus } = useAuthStore();
+  const { setAuthStatus, isAuthenticated } = useAuthStore();
   const form = useForm<validationType>({
     resolver: zodResolver(zodSchema),
   });
@@ -61,6 +61,12 @@ function Login({ className, ...props }: LoginProps) {
   }>({
     step: 0,
   });
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/");
+    }
+  }, [isAuthenticated, router]);
 
   const handleCompleteSignin = useCallback(
     async (payload: userType) => {
@@ -74,23 +80,27 @@ function Login({ className, ...props }: LoginProps) {
             { user, shop }
           );
           setAuthStatus(user);
-          router.push("/");
-          return;
+
+          break;
         }
         case isSignupForm:
           {
             const user = await signup(payload);
             setAuthStatus(user);
           }
-          return;
+          break;
 
         default:
           {
-            const user = await login(payload);
+            const user = await login({
+              email: payload.email,
+              password: payload.password,
+            });
             setAuthStatus(user);
           }
-          return;
+          break;
       }
+      router.push("/");
     },
     [isRegistration, isSignupForm, router, setAuthStatus]
   );
