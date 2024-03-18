@@ -19,15 +19,17 @@ import {
 import { Button } from "./ui/button";
 import { useAuthStore } from "@/utils/store";
 
+type gmapType = {
+  onSave: (loc: suggestionType) => void;
+  title?: string;
+  returnCompleteAddress?: boolean;
+};
+
 export function GmapAutoComplete({
   title = "Click to select a address",
   onSave,
-  alreadyHaveAddress = false,
-}: {
-  onSave: (loc: suggestionType) => void;
-  title?: string;
-  alreadyHaveAddress?: boolean;
-}) {
+  returnCompleteAddress = false,
+}: gmapType) {
   const { user } = useAuthStore();
   const [open, setOpen] = useState(false);
   const [suggestions, setsuggestions] = useState<suggestionType[]>([]);
@@ -51,13 +53,19 @@ export function GmapAutoComplete({
   const suggestionsAvailable = suggestions.length > 0;
 
   const handleLocSelect = useCallback(
-    (loc: suggestionType) => {
+    async (loc: suggestionType) => {
+      if (returnCompleteAddress) {
+        loc = await getCityNameFromCoords({
+          latitude: loc.lat,
+          longitude: loc.lon,
+        });
+      }
       setvalue("");
       onSave(loc);
       setOpen(false);
       // router.push("/welcome");
     },
-    [onSave]
+    [onSave, returnCompleteAddress]
   );
 
   const autoSelect = useCallback(() => {

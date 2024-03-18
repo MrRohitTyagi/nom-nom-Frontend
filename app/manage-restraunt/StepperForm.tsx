@@ -5,6 +5,7 @@ import { useShopStore } from "@/utils/store";
 import { ArrowRight } from "lucide-react";
 
 import useDimension, { breakpointType } from "@/hooks/useDimension";
+import { Button } from "@/components/ui/button";
 
 function getCssByBreakpoint(breakpoint: breakpointType) {
   let classname = "";
@@ -92,6 +93,23 @@ const StepperForm = ({
         })}
       </div>
       <div className="bottom-area border-[3px]">{CurrentContent}</div>
+      <div className="footer flex flex-row justify-between">
+        <Button>Save Details</Button>
+        <div className="gap-2 flex flex-row">
+          <Button
+            disabled={currentStep == 0}
+            onClick={() => setcurrentStep((prev) => prev - 1)}
+          >
+            Previous Step
+          </Button>
+          <Button
+            disabled={currentStep === steps.length - 1}
+            onClick={() => setcurrentStep((prev) => prev + 1)}
+          >
+            Next Step
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
