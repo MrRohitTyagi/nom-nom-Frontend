@@ -13,10 +13,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { login, signup } from "@/gateways/authGateway";
+import { login, regesterShop, signup } from "@/gateways/authGateway";
 
 import { cn } from "@/lib/utils";
-import { useAuthStore, userType } from "@/utils/store";
+import { shopType, useAuthStore, userType } from "@/utils/store";
 import {
   Form,
   FormControl,
@@ -67,9 +67,15 @@ function Login({ className, ...props }: LoginProps) {
       console.log(`%c payload `, "color: pink;border:1px solid pink", payload);
       switch (true) {
         case isRegistration: {
-          //TODO
-          // const user = await signup(payload);
-          // setAuthStatus(user);
+          const { user, shop } = await regesterShop(payload as shopType);
+          console.log(
+            `%c user `,
+            "color: white;border:3px solid white;margin:5px",
+            { user, shop }
+          );
+          setAuthStatus(user);
+          router.push("/");
+          return;
         }
         case isSignupForm:
           {
@@ -86,7 +92,7 @@ function Login({ className, ...props }: LoginProps) {
           return;
       }
     },
-    [isRegistration, isSignupForm, setAuthStatus]
+    [isRegistration, isSignupForm, router, setAuthStatus]
   );
 
   const onSubmit = useCallback(
@@ -120,19 +126,23 @@ function Login({ className, ...props }: LoginProps) {
             password: formValues.password,
             name: formValues.name,
           };
+          if (isRegistration) {
+            loginData.shop_name = formValues.shop_name;
+            loginData.shop_desc = formValues.shop_desc;
+          }
           // setvalues(loginData);
         }
 
-        return;
         await handleCompleteSignin(loginData);
         setIsLoading(false);
         // router.push("/");
       } catch (error) {
         console.log(error);
+        setIsLoading(false);
       }
       //further login steps
     },
-    [form, handleCompleteSignin]
+    [form, handleCompleteSignin, isRegistration]
   );
 
   return (

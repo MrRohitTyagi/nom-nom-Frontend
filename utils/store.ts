@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { deleteToken, getToken } from "./cookie";
 import { updateUser, getUser } from "@/gateways/userGateway";
 
-export type userType = {
+export interface userType {
   _id?: string;
   email: string;
   name: string;
@@ -14,7 +14,14 @@ export type userType = {
   picture?: string | undefined;
   isOwner?: boolean;
   address?: addressType;
-};
+  shop_name?: string;
+  shop_desc?: string;
+}
+export interface shopType extends userType {
+  shop_name: string;
+  shop_desc: string;
+}
+
 export type addressType = {
   city?: string;
   state?: string;
@@ -35,27 +42,27 @@ type storeType = {
   logout: () => void;
 };
 
-export const useAuthStore = create<storeType>((set) => ({
+export const useAuthStore = create<storeType>((setState) => ({
   user: {} as userType,
   isLoading: false,
   isAuthenticated: false,
   logout: () => {
     deleteToken();
-    set(() => ({
+    setState(() => ({
       isAuthenticated: false,
       user: {} as userType,
       isLoading: false,
     }));
   },
   setAuthStatus: (userPayload: userType) => {
-    set(() => ({
+    setState(() => ({
       user: userPayload,
       isAuthenticated: true,
       isLoading: false,
     }));
   },
   dynamicUserUpdate: (payload: any) => {
-    set((store: storeType) => {
+    setState((store: storeType) => {
       if (store?.user?._id) updateUser(payload);
       return {
         user: { ...store.user, ...payload },
@@ -64,19 +71,23 @@ export const useAuthStore = create<storeType>((set) => ({
   },
   getAuthStatus: async () => {
     let user;
-    set(() => ({ isLoading: true }));
+    setState(() => ({ isLoading: true }));
     const token = getToken();
     if (!token) {
       user = {};
     } else {
       const userdata: userType = await getUser();
-      set(() => ({
+      setState(() => ({
         isAuthenticated: true,
         user: userdata,
       }));
       user = userdata;
     }
-    set(() => ({ isLoading: false }));
+    setState(() => ({ isLoading: false }));
     return user;
   },
+}));
+
+export const useShopStore = create((setState) => ({
+  shop: {},
 }));
