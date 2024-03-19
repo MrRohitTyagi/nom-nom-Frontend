@@ -162,7 +162,10 @@ const Navbar = () => {
                   {isAuthenticated ? (
                     <button
                       className="py-2"
-                      onClick={() => router.push("/profile")}
+                      onClick={() => {
+                        router.push("/profile");
+                        setisOpen(false);
+                      }}
                     >
                       <div className="flex flex-row gap-2 items-center">
                         <User size={24} />
@@ -175,7 +178,10 @@ const Navbar = () => {
                   {user.shop && (
                     <button
                       className="py-2"
-                      onClick={() => router.push("/manage-restraunt")}
+                      onClick={() => {
+                        router.push("/manage-restraunt");
+                        setisOpen(false);
+                      }}
                     >
                       <div className="flex flex-row gap-2 items-center">
                         <Store size={24} />
