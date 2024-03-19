@@ -3,9 +3,14 @@
 import React, { useState } from "react";
 import { useShopStore } from "@/utils/store";
 import { ArrowRight } from "lucide-react";
+import dynamic from "next/dynamic";
 
 import useDimension, { breakpointType } from "@/hooks/useDimension";
 import { Button } from "@/components/ui/button";
+
+// const useDimension = dynamic(() => import("@/hooks/useDimension"), {
+//   ssr: false,
+// });
 
 function getCssByBreakpoint(breakpoint: breakpointType) {
   let classname = "";
