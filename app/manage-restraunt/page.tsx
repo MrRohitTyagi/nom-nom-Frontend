@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React from "react";
 import StepperForm from "./StepperForm";
 import {
   Accordion,
@@ -67,7 +67,7 @@ const ManageRestraunt = () => {
   ];
 
   function onSubmit(e: any) {
-    form.formState.errors;
+    console.log(`%c e `, "color: yellow;border:1px solid lightgreen", e);
   }
 
   return (
@@ -81,7 +81,6 @@ const ManageRestraunt = () => {
 
 type formType = UseFormReturn<validationType, any, undefined>;
 const FirstStep = ({ form }: { form: formType }) => {
-
   return (
     <div className="first flex flex-col gap-4 p-4">
       <h1 className="opacity-70 text-center text-2xl">Restraunt information</h1>

@@ -45,7 +45,7 @@ export default function Home() {
           className=" w-screen min-h-[40vh] object-cover"
           src={homebackgroundimage}
           alt="food bacgfround"
-        />{" "}
+        />
         <div className="text-white space-y-3 main-heading absolute top-2/3 left-1/2 transform translate-x-[-50%] translate-y-[-50%] text-center">
           <motion.h1
             variants={headingVarient}
