@@ -13,6 +13,7 @@ export type dimesionType = {
 };
 
 const useDimension = () => {
+  const [width, setwidth] = useState<number>(1024);
   const getBreakpoint = useCallback((width: number) => {
     switch (true) {
       case width <= 640:
@@ -29,7 +30,6 @@ const useDimension = () => {
         break;
     }
   }, []);
-  const [width, setwidth] = useState<number>(window.innerWidth);
 
   useEffect(() => {
     let id: NodeJS.Timeout;
@@ -47,7 +47,9 @@ const useDimension = () => {
 
   const { breakpoint, sm, md, lg, xl, x2l }: dimesionType = useMemo(() => {
     const obj = {} as dimesionType;
+
     const breakpoint = getBreakpoint(width);
+
     obj.breakpoint = breakpoint;
     obj.sm = breakpoint === "sm";
     obj.md = breakpoint === "md";
