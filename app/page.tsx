@@ -66,7 +66,6 @@ export default function Home() {
           <div className="text-black flex flex-col gap-4 w-full max-w-sm items-center space-y-2 search-bar justify-center">
             <GmapAutoComplete
               onSave={handlelocationSelect}
-              alreadyHaveAddress={!!user?.address?.display_name}
               title={user?.address?.display_name}
             />
           </div>
