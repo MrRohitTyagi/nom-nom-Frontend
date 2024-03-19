@@ -73,7 +73,7 @@ const ManageRestraunt = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="pb-20 pt-10">
-        <StepperForm steps={steps} startFrom={0} />
+        {/* <StepperForm steps={steps} startFrom={0} /> */}
       </form>
     </Form>
   );
