@@ -1,40 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import { useShopStore } from "@/utils/store";
 import { ArrowRight } from "lucide-react";
-import dynamic from "next/dynamic";
 
-import useDimension, { breakpointType } from "@/hooks/useDimension";
 import { Button } from "@/components/ui/button";
-
-// const useDimension = dynamic(() => import("@/hooks/useDimension"), {
-//   ssr: false,
-// });
-
-function getCssByBreakpoint(breakpoint: breakpointType) {
-  let classname = "";
-  switch (breakpoint) {
-    case "sm":
-      classname = "mx-8";
-      break;
-    case "md":
-      classname = "mx-16";
-      break;
-    case "lg":
-      classname = "mx-32";
-      break;
-    case "xl":
-      classname = "mx-64";
-      break;
-    case "2xl":
-      classname = "mx-80";
-      break;
-    default:
-      break;
-  }
-  return classname;
-}
 
 const StepperForm = ({
   steps,
@@ -44,14 +13,13 @@ const StepperForm = ({
   startFrom: number;
 }) => {
   const [currentStep, setcurrentStep] = useState<number>(startFrom);
-
-  const { shop } = useShopStore();
-  const { breakpoint } = useDimension();
   const CurrentContent = steps[currentStep];
 
   return (
-    <div className={`${getCssByBreakpoint(breakpoint)} gap-4 flex flex-col`}>
-      <div className="top-steps flex flex-row gap-3 items-center">
+    <div
+      className={`gap-4 flex flex-col sm: mx-2 md:mx-16 lg:mx-32 xl:mx-64 2xl:mx-80`}
+    >
+      <div className="top-steps flex flex-row gap-3 items-center sm: mx-8">
         {steps.map((_, i) => {
           const isLastStep = i === steps.length - 1;
 
@@ -88,8 +56,8 @@ const StepperForm = ({
           );
         })}
       </div>
-      <div className="bottom-area border-[3px]">{CurrentContent}</div>
-      <div className="footer flex flex-row justify-between">
+      <div className="bottom-area ">{CurrentContent}</div>
+      <div className=" p-4 footer flex flex-row justify-between">
         <Button>Save Details</Button>
         <div className="gap-2 flex flex-row">
           <Button

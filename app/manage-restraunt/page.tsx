@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import StepperForm from "./StepperForm";
 import {
   Accordion,
@@ -22,6 +22,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import GmapAutoComplete from "@/components/GmapAutoComplete";
+import MapComp from "@/components/MapComponent";
+import { useAuthStore } from "@/utils/store";
 
 type validationType = {
   name: string;
@@ -81,8 +83,15 @@ const ManageRestraunt = () => {
 
 type formType = UseFormReturn<validationType, any, undefined>;
 const FirstStep = ({ form }: { form: formType }) => {
+  const { user } = useAuthStore();
+
+  const [coords, setCoords] = useState<[number, number]>([
+    user.address?.lat || 28.344867438128745,
+    user.address?.lon || 79.42556179428163,
+  ]);
+
   return (
-    <div className="first flex flex-col gap-4 p-4">
+    <div className="first flex flex-col gap-4 p-2">
       <h1 className="opacity-70 text-center text-2xl">Restraunt information</h1>
       <Accordion type="single">
         <AccordionItem value="item-1" className="mt-5 mb-2">
@@ -199,9 +208,13 @@ const FirstStep = ({ form }: { form: formType }) => {
                 form.setValue("address", e.address);
                 form.setFocus("address", {});
                 form.setError("address", {});
+                console.log(e);
+
+                setCoords([e.lat, e.lon]);
               }}
               returnCompleteAddress={true}
             />
+            <MapComp setCoords={setCoords} coords={coords} />
           </AccordionContent>
         </AccordionItem>
 

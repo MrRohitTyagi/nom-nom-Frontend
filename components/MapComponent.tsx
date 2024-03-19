@@ -1,28 +1,34 @@
-import React from "react";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+"use client";
 
-const Map = ({
-  latitude,
-  longitude,
+import React, { Dispatch, SetStateAction, useState } from "react";
+import { Draggable, Map, Marker, ZoomControl } from "pigeon-maps";
+import { osm } from "pigeon-maps/providers";
+import Image from "next/image";
+
+export default function MyMap({
+  setCoords,
+  coords,
 }: {
-  latitude: number;
-  longitude: number;
-}) => {
+  setCoords: Dispatch<SetStateAction<[number, number]>>;
+  coords: [number, number];
+}) {
   return (
-    <div className="h-[50vh] w-[50vw] border-2">
-      <MapContainer center={[51.505, -0.09]} zoom={5} scrollWheelZoom={false}>
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    <Map
+      provider={osm}
+      height={300}
+      center={coords}
+      defaultCenter={coords}
+      defaultZoom={16}
+    >
+      <ZoomControl />
+      <Draggable anchor={coords} onDragEnd={setCoords}>
+        <Image
+          src="https://cdn-icons-png.flaticon.com/512/684/684908.png"
+          width={25}
+          height={25}
+          alt="m"
         />
-        <Marker position={[51.505, -0.09]}>
-          <Popup>
-            A pretty CSS3 popup. <br /> Easily customizable.
-          </Popup>
-        </Marker>
-      </MapContainer>
-    </div>
+      </Draggable>
+    </Map>
   );
-};
-
-export default Map;
+}

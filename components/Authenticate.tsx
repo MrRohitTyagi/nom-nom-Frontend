@@ -8,7 +8,7 @@ import Navbar from "./Navbar";
 const Authenticate = ({ children }: { children: React.ReactNode }) => {
   const { getAuthStatus, user, isLoading } = useAuthStore();
   const { getStoreData } = useShopStore();
-
+  console.log(`%c user `, "color: yellow;border:1px solid lightgreen", user);
   useEffect(() => {
     async function fetchUser() {
       try {
