@@ -16,7 +16,7 @@ const Navbar = () => {
   const [isOpen, setisOpen] = useState<boolean>(false);
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated, logout } = useAuthStore();
+  const { isAuthenticated, logout, user } = useAuthStore();
 
   const showNavbar = [
     "/partner-with-us",
@@ -171,6 +171,17 @@ const Navbar = () => {
                     </button>
                   ) : (
                     loginSignup
+                  )}
+                  {user.shop && (
+                    <button
+                      className="py-2"
+                      onClick={() => router.push("/manage-restraunt")}
+                    >
+                      <div className="flex flex-row gap-2 items-center">
+                        <Store size={16} />
+                        <h1>Manage Restraunt</h1>
+                      </div>
+                    </button>
                   )}
 
                   {isAuthenticated && (

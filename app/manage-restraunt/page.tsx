@@ -60,29 +60,19 @@ const zodSchema = z.object({
 });
 
 const ManageRestraunt = () => {
-  const form = useForm<validationType>({ resolver: zodResolver(zodSchema) });
-
   const steps = [
-    <FirstStep key={1} form={form} />,
-    <SecondStep key={2} form={form} />,
-    <ThirdStep key={3} form={form} />,
+    <FirstStep key={1} step={1} />,
+    <SecondStep key={2} step={2} />,
+    <ThirdStep key={3} step={3} />,
   ];
 
-  function onSubmit(e: any) {
-    console.log(`%c e `, "color: yellow;border:1px solid lightgreen", e);
-  }
-
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="pb-20 pt-10">
-        <StepperForm steps={steps} startFrom={0} />
-      </form>
-    </Form>
-  );
+  return <StepperForm steps={steps} startFrom={0} />;
 };
 
 type formType = UseFormReturn<validationType, any, undefined>;
-const FirstStep = ({ form }: { form: formType }) => {
+
+const FirstStep = ({}: { step: number }) => {
+  const form = useForm<validationType>({ resolver: zodResolver(zodSchema) });
   const { user } = useAuthStore();
 
   const [coords, setCoords] = useState<[number, number]>([
@@ -90,170 +80,180 @@ const FirstStep = ({ form }: { form: formType }) => {
     user.address?.lon || 79.42556179428163,
   ]);
 
+  function onSubmit(e: any) {
+    console.log(`%c e `, "color: yellow;border:1px solid lightgreen", e);
+  }
   return (
-    <div className="first flex flex-col gap-4 p-2">
-      <h1 className="opacity-70 text-center text-2xl">Restraunt information</h1>
-      <Accordion type="single">
-        <AccordionItem value="item-1" className="mt-5 mb-2">
-          <AccordionTrigger className="p-4">
-            <div className="flex flex-col gap-1">
-              <h1 className="text-start text-2xl">Restaurant details</h1>
-              <h1 className="text-start text-sm opacity-50">
-                Name, address and location
-              </h1>
-            </div>
-          </AccordionTrigger>
-          <AccordionContent className="gap-2 flex flex-col p-4">
-            {/* // Name */}
-            <FormLabel className="not-sr-only" htmlFor="name">
-              Restraunt name
-            </FormLabel>
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        name="name"
-                        id="name"
-                        placeholder="Restraunt name"
-                        type="text"
-                        autoCapitalize="none"
-                        autoComplete="name"
-                        autoCorrect="off"
-                        onChange={field.onChange}
-                        onBlur={field.onBlur}
-                        value={field.value}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormLabel className="not-sr-only" htmlFor="desc">
-              Restraunt description
-            </FormLabel>
-            <FormField
-              control={form.control}
-              name="desc"
-              render={({ field }) => {
-                return (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        name="desc"
-                        id="desc"
-                        placeholder="Restraunt description"
-                        type="text"
-                        autoCapitalize="none"
-                        autoCorrect="off"
-                        onChange={field.onChange}
-                        onBlur={field.onBlur}
-                        value={field.value}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                );
-              }}
-            />
-            <FormLabel className="not-sr-only" htmlFor="address">
-              Complete address
-            </FormLabel>
-            <FormControl>
-              <Input
-                placeholder="Country"
-                type="text"
-                autoCapitalize="none"
-                autoCorrect="off"
-                {...form.register("address.country")}
-              />
-            </FormControl>
-            <FormErrorLabel path="address.country" />
-            <FormControl>
-              <Input
-                placeholder="City"
-                type="text"
-                autoCapitalize="none"
-                autoCorrect="off"
-                {...form.register("address.city")}
-              />
-            </FormControl>
-            <FormErrorLabel path="address.city" />
-            <FormControl>
-              <Input
-                placeholder="Postcode"
-                type="number"
-                autoCapitalize="none"
-                autoCorrect="off"
-                {...form.register("address.postcode")}
-              />
-            </FormControl>
-            <FormErrorLabel path="address.postcode" />
-            <FormControl>
-              <Input
-                placeholder="state"
-                type="text"
-                autoCapitalize="none"
-                autoCorrect="off"
-                {...form.register("address.state")}
-              />
-            </FormControl>
-            <FormErrorLabel path="address.state" />
-            <GmapAutoComplete
-              onSave={(e: any) => {
-                form.setValue("address", e.address);
-                form.setFocus("address", {});
-                form.setError("address", {});
-                console.log(e);
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="pb-20 pt-10">
+        <div className="first flex flex-col gap-4 p-2">
+          <h1 className="opacity-70 text-center text-2xl">
+            Restraunt information
+          </h1>
+          <Accordion type="single">
+            <AccordionItem value="item-1" className="mt-5 mb-2">
+              <AccordionTrigger className="p-4">
+                <div className="flex flex-col gap-1">
+                  <h1 className="text-start text-2xl">Restaurant details</h1>
+                  <h1 className="text-start text-sm opacity-50">
+                    Name, address and location
+                  </h1>
+                </div>
+              </AccordionTrigger>
+              <AccordionContent className="gap-2 flex flex-col p-4">
+                {/* // Name */}
+                <FormLabel className="not-sr-only" htmlFor="name">
+                  Restraunt name
+                </FormLabel>
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            name="name"
+                            id="name"
+                            placeholder="Restraunt name"
+                            type="text"
+                            autoCapitalize="none"
+                            autoComplete="name"
+                            autoCorrect="off"
+                            onChange={field.onChange}
+                            onBlur={field.onBlur}
+                            value={field.value}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <FormLabel className="not-sr-only" htmlFor="desc">
+                  Restraunt description
+                </FormLabel>
+                <FormField
+                  control={form.control}
+                  name="desc"
+                  render={({ field }) => {
+                    return (
+                      <FormItem>
+                        <FormControl>
+                          <Input
+                            name="desc"
+                            id="desc"
+                            placeholder="Restraunt description"
+                            type="text"
+                            autoCapitalize="none"
+                            autoCorrect="off"
+                            onChange={field.onChange}
+                            onBlur={field.onBlur}
+                            value={field.value}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    );
+                  }}
+                />
+                <FormLabel className="not-sr-only" htmlFor="address">
+                  Complete address
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder="Country"
+                    type="text"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    {...form.register("address.country")}
+                  />
+                </FormControl>
+                <FormErrorLabel path="address.country" />
+                <FormControl>
+                  <Input
+                    placeholder="City"
+                    type="text"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    {...form.register("address.city")}
+                  />
+                </FormControl>
+                <FormErrorLabel path="address.city" />
+                <FormControl>
+                  <Input
+                    placeholder="Postcode"
+                    type="number"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    {...form.register("address.postcode")}
+                  />
+                </FormControl>
+                <FormErrorLabel path="address.postcode" />
+                <FormControl>
+                  <Input
+                    placeholder="state"
+                    type="text"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    {...form.register("address.state")}
+                  />
+                </FormControl>
+                <FormErrorLabel path="address.state" />
+                <GmapAutoComplete
+                  onSave={(e: any) => {
+                    form.setValue("address", e.address);
+                    form.setFocus("address", {});
+                    form.setError("address", {});
+                    console.log(e);
 
-                setCoords([e.lat, e.lon]);
-              }}
-              returnCompleteAddress={true}
-            />
-            <MapComp setCoords={setCoords} coords={coords} />
-          </AccordionContent>
-        </AccordionItem>
+                    setCoords([e.lat, e.lon]);
+                  }}
+                  returnCompleteAddress={true}
+                />
+                <MapComp setCoords={setCoords} coords={coords} />
+              </AccordionContent>
+            </AccordionItem>
 
-        {/* -----------------------------------------------------------------------2nd accordian ito */}
+            {/* -----------------------------------------------------------------------2nd accordian ito */}
 
-        <AccordionItem value="item-2" className="mt-5 mb-2">
-          <AccordionTrigger className="p-4">
-            <div className="flex flex-col gap-1">
-              <h1 className="text-start text-2xl">Restaurant Contacts</h1>
-              <h1 className="text-start text-sm opacity-50">
-                Your customers will call on this number for general enquiries
-              </h1>
-            </div>
-          </AccordionTrigger>
+            <AccordionItem value="item-2" className="mt-5 mb-2">
+              <AccordionTrigger className="p-4">
+                <div className="flex flex-col gap-1">
+                  <h1 className="text-start text-2xl">Restaurant Contacts</h1>
+                  <h1 className="text-start text-sm opacity-50">
+                    Your customers will call on this number for general
+                    enquiries
+                  </h1>
+                </div>
+              </AccordionTrigger>
 
-          <AccordionContent className="gap-2 flex flex-col p-4">
-            <Input
-              placeholder="123456789"
-              type="number"
-              autoCapitalize="none"
-              autoCorrect="off"
-              {...form.register("phone")}
-            />
-            <FormErrorLabel path="phone" />
-            <Input
-              placeholder="123456789"
-              type="number"
-              autoCapitalize="none"
-              autoCorrect="off"
-              {...form.register("tel")}
-            />
-            <FormErrorLabel path="tel" />
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
-    </div>
+              <AccordionContent className="gap-2 flex flex-col p-4">
+                <Input
+                  placeholder="123456789"
+                  type="number"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  {...form.register("phone")}
+                />
+                <FormErrorLabel path="phone" />
+                <Input
+                  placeholder="123456789"
+                  type="number"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  {...form.register("tel")}
+                />
+                <FormErrorLabel path="tel" />
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+      </form>
+    </Form>
   );
 };
-const SecondStep = ({ form }: { form: formType }) => {
+const SecondStep = ({}: { step: number }) => {
   return (
     <div className="first flex flex-col gap-4">
       <h1 className="opacity-70 text-center text-2xl">
@@ -263,7 +263,7 @@ const SecondStep = ({ form }: { form: formType }) => {
     </div>
   );
 };
-const ThirdStep = ({ form }: { form: formType }) => {
+const ThirdStep = ({}: { step: number }) => {
   return (
     <div className="first flex flex-col gap-4">
       <h1 className="opacity-70 text-center text-2xl">
