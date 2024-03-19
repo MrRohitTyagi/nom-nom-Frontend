@@ -178,7 +178,7 @@ const Navbar = () => {
                       onClick={() => router.push("/manage-restraunt")}
                     >
                       <div className="flex flex-row gap-2 items-center">
-                        <Store size={16} />
+                        <Store size={24} />
                         <h1>Manage Restraunt</h1>
                       </div>
                     </button>
