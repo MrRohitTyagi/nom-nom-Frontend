@@ -324,7 +324,7 @@ const initialMenu = {
 };
 const SecondStep = ({}: { step: number }) => {
   const [categoriesList, setCategoriesList] = useState<
-    { _id: string; name: string; isEditable?: boolean; menu: menuType[] }[]
+    { _id?: string; name: string; isEditable?: boolean; menu: menuType[] }[]
   >([]);
   const form = useForm<secondStepType>({
     defaultValues: { name: "", menu: [initialMenu] },
