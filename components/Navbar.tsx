@@ -16,7 +16,7 @@ const Navbar = () => {
   const [isOpen, setisOpen] = useState<boolean>(false);
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated, logout, user } = useStore();
+  const { isAuthenticated, logout, shop } = useStore();
 
   const showNavbar = [
     "/partner-with-us",
@@ -175,7 +175,7 @@ const Navbar = () => {
                   ) : (
                     loginSignup
                   )}
-                  {user.shop && (
+                  {shop._id && (
                     <button
                       className="py-2"
                       onClick={() => {

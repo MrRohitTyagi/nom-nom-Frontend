@@ -6,8 +6,12 @@ import { useStore } from "@/utils/store";
 import Navbar from "./Navbar";
 
 const Authenticate = ({ children }: { children: React.ReactNode }) => {
-  const { getAuthStatus, isLoading } = useStore();
-
+  const { getAuthStatus, isLoading, shop, user } = useStore();
+  console.log(
+    `%c {user,shop} `,
+    "color: white;border:3px solid white;margin:5px",
+    { user, shop }
+  );
   useEffect(() => {
     async function fetchUser() {
       try {

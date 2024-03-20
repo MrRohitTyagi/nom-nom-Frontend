@@ -7,12 +7,13 @@ import { Button } from "@/components/ui/button";
 
 const StepperForm = ({
   steps,
-  startFrom = 0,
+  setcurrentStep,
+  currentStep,
 }: {
   steps: React.JSX.Element[];
-  startFrom: number;
+  setcurrentStep: React.Dispatch<React.SetStateAction<number>>;
+  currentStep: number;
 }) => {
-  const [currentStep, setcurrentStep] = useState<number>(startFrom);
   const CurrentContent = steps[currentStep];
 
   return (
@@ -24,7 +25,7 @@ const StepperForm = ({
           const isLastStep = i === steps.length - 1;
 
           return (
-            <>
+            <React.Fragment key={i + "bar"}>
               <div
                 onClick={() => setcurrentStep(i)}
                 className={`step-circle rounded-full h-12 w-12 
@@ -52,7 +53,7 @@ const StepperForm = ({
                   />
                 </div>
               )}
-            </>
+            </React.Fragment>
           );
         })}
       </div>

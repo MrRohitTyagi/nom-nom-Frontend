@@ -1,12 +1,12 @@
-import axiosinstance from "@/utils/axiosinstance";
+import axiosInstance from "@/utils/axiosinstance";
 const baseURL = "/api/v1/user";
 
 export async function getUser() {
-  const { data } = await axiosinstance.get(`${baseURL}/get`);
+  const { data } = await axiosInstance().get(`${baseURL}/get`);
   return data.user;
 }
 
 export async function updateUser(payload: any) {
-  const { data } = await axiosinstance.put(`${baseURL}/update`, payload);
+  const { data } = await axiosInstance().put(`${baseURL}/update`, payload);
   return data.user;
 }

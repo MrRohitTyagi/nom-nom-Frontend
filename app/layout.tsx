@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "./nprogress.css";
 import Authenticate from "@/components/Authenticate";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -16,6 +17,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          src="https://unpkg.com/nprogress@0.2.0/nprogress.js"
+          defer
+        ></script>
+      </head>
       <body className={inter.className}>
         <Authenticate>{children}</Authenticate>
       </body>

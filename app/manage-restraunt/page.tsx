@@ -25,8 +25,10 @@ import GmapAutoComplete from "@/components/GmapAutoComplete";
 import MapComp from "@/components/MapComponent";
 import { useStore } from "@/utils/store";
 import { Button } from "@/components/ui/button";
+import { updateShop } from "@/gateways/shopGateways";
+import { useRouter } from "next/navigation";
 
-type validationType = {
+export type FirstStepType = {
   name: string;
   desc: string;
   phone: string;
@@ -63,21 +65,35 @@ const zodSchema = z.object({
 });
 
 const ManageRestraunt = () => {
+  const { shop, isAuthenticated } = useStore();
+  const router = useRouter();
+  const [currentStep, setcurrentStep] = useState<number>(
+    shop.regestrationStep || 0
+  );
+  useEffect(() => {
+    if (!isAuthenticated) router.push("/");
+    setcurrentStep(shop.regestrationStep || 0);
+  }, [isAuthenticated, router, shop.regestrationStep]);
+
   const steps = [
     <FirstStep key={1} step={1} />,
     <SecondStep key={2} step={2} />,
     <ThirdStep key={3} step={3} />,
   ];
 
-  return <StepperForm steps={steps} startFrom={0} />;
+  return (
+    <StepperForm
+      steps={steps}
+      currentStep={currentStep}
+      setcurrentStep={setcurrentStep}
+    />
+  );
 };
 
-type formType = UseFormReturn<validationType, any, undefined>;
-
 const FirstStep = ({}: { step: number }) => {
-  const { user, shop } = useStore();
+  const { user, shop, dynamicShopUpdate } = useStore();
 
-  const form = useForm<validationType>({
+  const form = useForm<FirstStepType>({
     resolver: zodResolver(zodSchema),
     defaultValues: {
       name: shop.name,
@@ -87,9 +103,7 @@ const FirstStep = ({}: { step: number }) => {
       address: shop?.address || {},
     },
   });
-  useEffect(() => {
-    console.log("form.formState", form.formState.defaultValues);
-  });
+
   const [coords, setCoords] = useState<[number, number]>([
     user.address?.lat || 28.344867438128745,
     user.address?.lon || 79.42556179428163,
@@ -100,8 +114,10 @@ const FirstStep = ({}: { step: number }) => {
     shop,
   });
 
-  function onSubmit(e: any) {
-    console.log(`%c e `, "color: yellow;border:1px solid lightgreen", e);
+  async function onSubmit(payload: any) {
+    // form.formState.isLoading = true;
+    dynamicShopUpdate(payload);
+    // form.formState.isLoading = false;
   }
 
   return (
@@ -204,7 +220,7 @@ const FirstStep = ({}: { step: number }) => {
                 <FormControl>
                   <Input
                     placeholder="Postcode"
-                    type="number"
+                    type="text"
                     autoCapitalize="none"
                     autoCorrect="off"
                     {...form.register("address.postcode")}
@@ -291,7 +307,7 @@ const SecondStep = ({}: { step: number }) => {
       <h1 className="opacity-70 text-center text-2xl">
         Menu, Prices, Food images
       </h1>
-      <div className="main-content"></div>
+      <div className="main-content border-2"></div>
     </div>
   );
 };

@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 
 const UserProfile = () => {
   const router = useRouter();
-  const { user, isAuthenticated, logout } = useStore();
+  const { user, isAuthenticated, logout, shop } = useStore();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="outline-none">
@@ -36,7 +36,7 @@ const UserProfile = () => {
         </DropdownMenuItem>
         <DropdownMenuSeparator />
 
-        {user.shop && (
+        {shop._id && (
           <>
             <DropdownMenuItem onClick={() => router.push("/manage-restraunt")}>
               <div className="flex flex-row gap-2 items-center">

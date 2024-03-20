@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { deleteToken, getToken } from "./cookie";
 import { updateUser, getUser } from "@/gateways/userGateway";
+import { updateShop } from "@/gateways/shopGateways";
 
 export interface userType {
   _id?: string;
@@ -31,7 +32,7 @@ export type addressType = {
   lon?: number;
 };
 
-type userStoreType = {
+type StoreType = {
   user: userType;
   shop: shopInterface;
   isLoading: boolean;
@@ -39,10 +40,11 @@ type userStoreType = {
   setAuthStatus: (payload: userType) => void;
   getAuthStatus: () => any;
   dynamicUserUpdate: (payload: any) => any;
+  dynamicShopUpdate: (payload: any) => any;
   logout: () => void;
 };
 
-export const useStore = create<userStoreType>((setState) => ({
+export const useStore = create<StoreType>((setState) => ({
   user: {} as userType,
   shop: {} as shopInterface,
   isLoading: false,
@@ -55,15 +57,17 @@ export const useStore = create<userStoreType>((setState) => ({
       isLoading: false,
     }));
   },
-  setAuthStatus: (userPayload: userType) => {
+  setAuthStatus: (response: userType) => {
+    const { shop, ...userPayload } = response;
     setState(() => ({
       user: userPayload,
       isAuthenticated: true,
       isLoading: false,
+      shop: shop as shopInterface,
     }));
   },
   dynamicUserUpdate: (payload: any) => {
-    setState((store: userStoreType) => {
+    setState((store: StoreType) => {
       if (store?.user?._id) updateUser(payload);
       return {
         user: { ...store.user, ...payload },
@@ -81,12 +85,22 @@ export const useStore = create<userStoreType>((setState) => ({
       setState(() => ({
         isAuthenticated: true,
         user: userdata,
-        ...(shop ? { shop: shop as shopInterface } : {}),
+        shop: (shop as shopInterface) || {},
       }));
       user = userdata;
     }
     setState(() => ({ isLoading: false }));
     return user;
+  },
+
+  // shop methods
+  dynamicShopUpdate: (payload: any) => {
+    setState((store: StoreType) => {
+      if (store?.shop?._id) updateShop(payload, { shop_id: store.shop._id });
+      return {
+        shop: { ...store.shop, ...payload },
+      };
+    });
   },
 }));
 
@@ -96,6 +110,7 @@ interface shopInterface {
   desc?: string;
   picture?: string[];
   address?: addressType;
+  regestrationStep?: number;
   isOpen?: boolean;
   timing?: { opensAt: string; closesAt: string };
   menu?: any; //TODO

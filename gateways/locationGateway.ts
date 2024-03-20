@@ -1,5 +1,5 @@
 "use client";
-import axios from "axios";
+import axiosInstance from "@/utils/axiosinstance";
 // const baseUrl = "https://nominatim.openstreetmap.org";
 const baseUrl = "https://us1.locationiq.com";
 const apiKey = process.env.NEXT_PUBLIC_GEOLOCATION_KEY; // Replace 'YOUR_API_KEY' with your LocationIQ API key
@@ -15,7 +15,7 @@ export async function getLocationSuggestions(query: string) {
   const url = `${baseUrl}/v1/search.php`;
 
   try {
-    const response = await axios.get(url, {
+    const response = await axiosInstance().get(url, {
       params: {
         key: apiKey,
         q: query,
@@ -45,7 +45,7 @@ export async function getCityNameFromCoords({
   const url = `${baseUrl}/v1/reverse.php`;
 
   try {
-    const response = await axios.get(url, {
+    const response = await axiosInstance().get(url, {
       params: {
         key: apiKey,
         lat: latitude,
