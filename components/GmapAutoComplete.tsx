@@ -17,7 +17,7 @@ import {
   suggestionType,
 } from "@/gateways/locationGateway";
 import { Button } from "./ui/button";
-import { useAuthStore } from "@/utils/store";
+import { useStore } from "@/utils/store";
 
 type gmapType = {
   onSave: (loc: suggestionType) => void;
@@ -30,7 +30,7 @@ export function GmapAutoComplete({
   onSave,
   returnCompleteAddress = false,
 }: gmapType) {
-  const { user } = useAuthStore();
+  const { user } = useStore();
   const [open, setOpen] = useState(false);
   const [suggestions, setsuggestions] = useState<suggestionType[]>([]);
   const [value, setvalue] = useState(user?.address?.display_name || "");

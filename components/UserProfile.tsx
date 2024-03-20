@@ -1,5 +1,5 @@
 "use client";
-import { useAuthStore } from "@/utils/store";
+import { useStore } from "@/utils/store";
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import Image from "next/image";
@@ -16,7 +16,7 @@ import { useRouter } from "next/navigation";
 
 const UserProfile = () => {
   const router = useRouter();
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const { user, isAuthenticated, logout } = useStore();
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className="outline-none">

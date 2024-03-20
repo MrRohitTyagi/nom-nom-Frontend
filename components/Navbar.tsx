@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { motion, Variants } from "framer-motion";
 import Link from "next/link";
-import { useAuthStore } from "@/utils/store";
+import { useStore } from "@/utils/store";
 import { Button } from "./ui/button";
 import UserProfile from "./UserProfile";
 import { usePathname, useRouter } from "next/navigation";
@@ -16,7 +16,7 @@ const Navbar = () => {
   const [isOpen, setisOpen] = useState<boolean>(false);
   const router = useRouter();
   const pathname = usePathname();
-  const { isAuthenticated, logout, user } = useAuthStore();
+  const { isAuthenticated, logout, user } = useStore();
 
   const showNavbar = [
     "/partner-with-us",

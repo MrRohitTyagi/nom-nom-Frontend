@@ -8,7 +8,7 @@ import {
   suggestionType,
 } from "@/gateways/locationGateway";
 import { BannerImageVarient, headingVarient } from "./varients";
-import { addressType, useAuthStore } from "@/utils/store";
+import { addressType, useStore } from "@/utils/store";
 import Footer from "@/components/Footer";
 import homebackgroundimage from "@/assets/food-bg.jpg";
 import PopularCitiesPage from "@/components/PopularCitiesPage";
@@ -17,7 +17,7 @@ import { useCallback } from "react";
 
 export default function Home() {
   const router = useRouter();
-  const { dynamicUserUpdate, user } = useAuthStore();
+  const { dynamicUserUpdate, user } = useStore();
 
   const handlelocationSelect = useCallback(
     async (location: suggestionType) => {

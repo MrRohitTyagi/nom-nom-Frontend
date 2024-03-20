@@ -33,6 +33,7 @@ export type addressType = {
 
 type userStoreType = {
   user: userType;
+  shop: shopInterface;
   isLoading: boolean;
   isAuthenticated: boolean;
   setAuthStatus: (payload: userType) => void;
@@ -41,8 +42,9 @@ type userStoreType = {
   logout: () => void;
 };
 
-export const useAuthStore = create<userStoreType>((setState) => ({
+export const useStore = create<userStoreType>((setState) => ({
   user: {} as userType,
+  shop: {} as shopInterface,
   isLoading: false,
   isAuthenticated: false,
   logout: () => {
@@ -75,10 +77,11 @@ export const useAuthStore = create<userStoreType>((setState) => ({
     if (!token) {
       user = {};
     } else {
-      const userdata: userType = await getUser();
+      const { shop, ...userdata }: userType = await getUser();
       setState(() => ({
         isAuthenticated: true,
         user: userdata,
+        ...(shop ? { shop: shop as shopInterface } : {}),
       }));
       user = userdata;
     }
@@ -97,18 +100,7 @@ interface shopInterface {
   timing?: { opensAt: string; closesAt: string };
   menu?: any; //TODO
   averageCTC?: string;
+  phone?: string;
+  tel?: string;
   offers?: { code: String; desc: string; discount: number }[];
 }
-interface ShopStoreType {
-  shop: shopInterface;
-  getStoreData: () => void;
-}
-export const useShopStore = create<ShopStoreType>((setState) => ({
-  shop: {},
-  getStoreData: async () => {
-    const user: userType = useAuthStore.getState().user;
-    if (typeof user?.shop === "object" && user?.shop?._id) {
-      setState(() => ({ shop: user.shop as shopInterface }));
-    }
-  },
-}));

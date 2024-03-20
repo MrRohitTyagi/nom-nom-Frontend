@@ -19,7 +19,7 @@ const StepperForm = ({
     <div
       className={`gap-4 flex flex-col sm: mx-2 md:mx-16 lg:mx-32 xl:mx-64 2xl:mx-80`}
     >
-      <div className="top-steps flex flex-row gap-3 items-center sm: mx-8">
+      <div className="top-steps flex flex-row gap-3 items-center pt-6 sm: mx-8">
         {steps.map((_, i) => {
           const isLastStep = i === steps.length - 1;
 
@@ -57,8 +57,8 @@ const StepperForm = ({
         })}
       </div>
       <div className="bottom-area ">{CurrentContent}</div>
-      <div className=" p-4 footer flex flex-row justify-between">
-        <Button>Save Details</Button>
+      <div className=" pt-2 pr-2 pl-2 footer flex flex-row justify-between">
+        <div></div>
         <div className="gap-2 flex flex-row">
           <Button
             disabled={currentStep == 0}

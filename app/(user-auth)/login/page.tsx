@@ -16,7 +16,7 @@ import { Label } from "@/components/ui/label";
 import { login, regesterShop, signup } from "@/gateways/authGateway";
 
 import { cn } from "@/lib/utils";
-import { shopType, useAuthStore, userType } from "@/utils/store";
+import { shopType, useStore, userType } from "@/utils/store";
 import {
   Form,
   FormControl,
@@ -50,7 +50,7 @@ function Login({ className, ...props }: LoginProps) {
 
   const zodSchema = getSchema(isSignupForm, isRegistration);
   const router = useRouter();
-  const { setAuthStatus, isAuthenticated } = useAuthStore();
+  const { setAuthStatus, isAuthenticated } = useStore();
   const form = useForm<validationType>({
     resolver: zodResolver(zodSchema),
   });

@@ -1,26 +1,23 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { useAuthStore, useShopStore } from "@/utils/store";
+import { useStore } from "@/utils/store";
 
 import Navbar from "./Navbar";
 
 const Authenticate = ({ children }: { children: React.ReactNode }) => {
-  const { getAuthStatus, user, isLoading } = useAuthStore();
-  const { getStoreData } = useShopStore();
-  console.log(`%c user `, "color: yellow;border:1px solid lightgreen", user);
+  const { getAuthStatus, isLoading } = useStore();
+
   useEffect(() => {
     async function fetchUser() {
       try {
         await getAuthStatus();
-        getStoreData();
-        // if (!user?._id && !isLoading) router.push("/");
       } catch (error) {
         console.log(error);
       }
     }
     fetchUser();
-  }, [getAuthStatus, getStoreData]);
+  }, [getAuthStatus]);
 
   return isLoading ? (
     <>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import StepperForm from "./StepperForm";
 import {
   Accordion,
@@ -23,7 +23,8 @@ import {
 import { Input } from "@/components/ui/input";
 import GmapAutoComplete from "@/components/GmapAutoComplete";
 import MapComp from "@/components/MapComponent";
-import { useAuthStore } from "@/utils/store";
+import { useStore } from "@/utils/store";
+import { Button } from "@/components/ui/button";
 
 type validationType = {
   name: string;
@@ -35,6 +36,7 @@ type validationType = {
     state?: string;
     postcode?: string;
     country?: string;
+    display_name?: string;
   };
 };
 const zodSchema = z.object({
@@ -56,6 +58,7 @@ const zodSchema = z.object({
     state: z.string().min(1, { message: "state in required" }),
     postcode: z.string().min(1, { message: "postcode in required" }),
     country: z.string().min(1, { message: "country in required" }),
+    display_name: z.string().min(1, { message: "Street in required" }),
   }),
 });
 
@@ -72,20 +75,38 @@ const ManageRestraunt = () => {
 type formType = UseFormReturn<validationType, any, undefined>;
 
 const FirstStep = ({}: { step: number }) => {
-  const form = useForm<validationType>({ resolver: zodResolver(zodSchema) });
-  const { user } = useAuthStore();
+  const { user, shop } = useStore();
 
+  const form = useForm<validationType>({
+    resolver: zodResolver(zodSchema),
+    defaultValues: {
+      name: shop.name,
+      desc: shop.desc,
+      phone: shop.phone,
+      tel: shop.tel,
+      address: shop?.address || {},
+    },
+  });
+  useEffect(() => {
+    console.log("form.formState", form.formState.defaultValues);
+  });
   const [coords, setCoords] = useState<[number, number]>([
     user.address?.lat || 28.344867438128745,
     user.address?.lon || 79.42556179428163,
   ]);
 
+  console.log(`%c {user,shop} `, "color: red;border:2px dotted red", {
+    user,
+    shop,
+  });
+
   function onSubmit(e: any) {
     console.log(`%c e `, "color: yellow;border:1px solid lightgreen", e);
   }
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="pb-20 pt-10">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="pb-2 pt-10">
         <div className="first flex flex-col gap-4 p-2">
           <h1 className="opacity-70 text-center text-2xl">
             Restraunt information
@@ -200,6 +221,16 @@ const FirstStep = ({}: { step: number }) => {
                   />
                 </FormControl>
                 <FormErrorLabel path="address.state" />
+                <FormControl>
+                  <Input
+                    placeholder="Street"
+                    type="text"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    {...form.register("address.display_name")}
+                  />
+                </FormControl>
+                <FormErrorLabel path="address.display_name" />
                 <GmapAutoComplete
                   onSave={(e: any) => {
                     form.setValue("address", e.address);
@@ -230,7 +261,7 @@ const FirstStep = ({}: { step: number }) => {
 
               <AccordionContent className="gap-2 flex flex-col p-4">
                 <Input
-                  placeholder="123456789"
+                  placeholder="Nhone number"
                   type="number"
                   autoCapitalize="none"
                   autoCorrect="off"
@@ -238,7 +269,7 @@ const FirstStep = ({}: { step: number }) => {
                 />
                 <FormErrorLabel path="phone" />
                 <Input
-                  placeholder="123456789"
+                  placeholder="Landline number"
                   type="number"
                   autoCapitalize="none"
                   autoCorrect="off"
@@ -248,6 +279,7 @@ const FirstStep = ({}: { step: number }) => {
               </AccordionContent>
             </AccordionItem>
           </Accordion>
+          <Button>Submit</Button>
         </div>
       </form>
     </Form>
