@@ -20,6 +20,7 @@ const axiosInstance = (headers: {} = {}) => {
     },
     function (error) {
       console.log("error", error);
+      NProgress.done();
       return Promise.reject(error);
     }
   );

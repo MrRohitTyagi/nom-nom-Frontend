@@ -4,6 +4,14 @@ const {
 } = require("tailwindcss/lib/util/flattenColorPalette");
 
 const config = {
+  safelist: [
+    "bg-green-500",
+    "bg-orange-500",
+    "bg-red-500",
+    "border-green-500",
+    "border-orange-500",
+    "border-red-500",
+  ],
   darkMode: ["class"],
   content: [
     "./pages/**/*.{ts,tsx}",

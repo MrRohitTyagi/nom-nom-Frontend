@@ -28,12 +28,12 @@ const StepperForm = ({
             <React.Fragment key={i + "bar"}>
               <div
                 onClick={() => setcurrentStep(i)}
-                className={`step-circle rounded-full h-12 w-12 
+                className={`step-circle rounded-full 
                 border-[3px] text-xl flex items-center justify-center
                  border-gray-400 cursor-pointer shadow-md 
                  transition-all transition-500 ${
                    currentStep >= i ? "bg-green-100 border-green-300" : ""
-                 } sm: h-8 w-8`}
+                 } sm:h-12 sm:w-12 h-8 w-8 `}
               >
                 {i + 1}
               </div>
