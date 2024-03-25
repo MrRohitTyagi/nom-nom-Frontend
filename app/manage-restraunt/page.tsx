@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import StepperForm from "@/components/StepperForm";
 import {
   Accordion,
@@ -26,9 +26,9 @@ import MapComp from "@/components/MapComponent";
 import { useStore } from "@/utils/store";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { Check, Edit, PlusCircle } from "lucide-react";
+import { Check, Edit, PlusCircle, X } from "lucide-react";
 import Image from "next/image";
-// import { v4 as uuidv4 } from "uuid";
+import { v4 as uuid } from "uuid";
 
 export type FirstStepType = {
   name: string;
@@ -276,16 +276,12 @@ const FirstStep = ({}: { step: number }) => {
                 <Input
                   placeholder="Phone number"
                   type="number"
-                  autoCapitalize="none"
-                  autoCorrect="off"
                   {...form.register("phone")}
                 />
                 <FormErrorLabel path="phone" />
                 <Input
                   placeholder="Landline number"
                   type="number"
-                  autoCapitalize="none"
-                  autoCorrect="off"
                   {...form.register("tel")}
                 />
                 <FormErrorLabel path="tel" />
@@ -299,38 +295,70 @@ const FirstStep = ({}: { step: number }) => {
   );
 };
 
+type vegNonVegOptionType = "veg" | "non veg" | "egg";
 type menuType = {
-  name: string;
+  _id: string;
+  item_name: string;
   desc: string;
-  price: number;
-  type: "veg" | "non veg" | "egg" | unknown;
-  picture: string;
+  price: number | string;
+  type: vegNonVegOptionType;
+  picture?: string | File;
 };
-const foofType = [
+type foodTypeVegNonVegType = {
+  type: vegNonVegOptionType;
+  color: "green" | "red" | "orange";
+};
+
+const foodTypeVegNonVeg: foodTypeVegNonVegType[] = [
   { type: "veg", color: "green" },
   { type: "non veg", color: "red" },
   { type: "egg", color: "orange" },
 ];
-type secondStepType = {
+export type secondStepType = {
+  isEditable?: boolean;
+  _id: string;
   name: string;
   menu: menuType[];
 };
-const initialMenu = {
+const initialMenu: menuType = {
+  _id: "",
   desc: "",
-  name: "",
+  item_name: "",
   picture: "",
-  price: 0,
-  type: "",
+  price: "0",
+  type: "veg",
 };
+const secondStepZodValidation = z.object({
+  name: z.string().min(3, "Name too short").max(20, "Name too long"),
+  menu: z.array(
+    z.object({
+      item_name: z.string().min(3, "Name too short").max(20, "Name too long"),
+      desc: z
+        .string()
+        .min(3, "Description too short")
+        .max(20, "Description too long"),
+      price: z.string().min(1, "Price is required"),
+      type: z.string().min(1, "Type is required"),
+    })
+  ),
+});
+
 const SecondStep = ({}: { step: number }) => {
-  const [categoriesList, setCategoriesList] = useState<
-    { _id?: string; name: string; isEditable?: boolean; menu: menuType[] }[]
-  >([]);
+  const { dynamicShopUpdate, shop } = useStore();
+  const [selectefvegNonVegOptionType, setselectefvegNonVegOptionType] =
+    useState<vegNonVegOptionType>("veg");
+  const [selectedPicture, setselectedPicture] = useState<File | undefined>(
+    undefined
+  );
+  const [categoriesList, setCategoriesList] = useState<secondStepType[]>([]);
+
   const form = useForm<secondStepType>({
+    resolver: zodResolver(secondStepZodValidation),
     defaultValues: { name: "", menu: [initialMenu] },
   });
+  useEffect(() => setCategoriesList(shop?.categories || []), [shop.categories]);
 
-  let values = form.getValues();
+  const values = form.getValues();
 
   console.log(`%c values `, "color: green;border:1px solid green", values);
   console.log(
@@ -339,9 +367,65 @@ const SecondStep = ({}: { step: number }) => {
     categoriesList
   );
 
-  function onSubmit(e: any) {
+  function onSubmit(e: secondStepType) {
     console.log(`%c e `, "color: red;border:2px dotted red", e);
+    setCategoriesList((prev) => {
+      return [
+        ...prev,
+        {
+          name: e.name,
+          menu: e.menu.map((e) => ({
+            ...e,
+            _id: uuid(),
+            picture: selectedPicture,
+          })),
+          _id: uuid(),
+        },
+      ];
+    });
+    form.reset();
   }
+
+  const handleStep2finalsave = async () => {
+    console.log(
+      `%c categories `,
+      "color: white;border:3px solid white;margin:5px",
+      categoriesList
+    );
+    await dynamicShopUpdate({ categories: categoriesList });
+  };
+
+  const handleEditCategory = useCallback(
+    (_id: string, keyToChange: string, value: any) => {
+      setCategoriesList((prev) => {
+        return prev.map((ele) => {
+          if (ele._id === _id) {
+            return { ...ele, [keyToChange]: value };
+          } else return ele;
+        });
+      });
+    },
+    []
+  );
+
+  const updateMenuOnChange = useCallback(
+    (_id: string, menu: menuType[], menu_id: string, key: any, value: any) => {
+      handleEditCategory(
+        _id,
+        "menu",
+        menu.map((m) => {
+          if (m._id === menu_id) {
+            return {
+              ...m,
+              [key]: value,
+            };
+          } else return m;
+        })
+      );
+    },
+    [handleEditCategory]
+  );
+
   return (
     <Form {...form}>
       <form
@@ -353,180 +437,479 @@ const SecondStep = ({}: { step: number }) => {
         </h1>
         <div className="main-content border-2">
           <Accordion type="multiple" className="p-2">
-            <AccordionItem value="second-1" className="mt-5 mb-2">
-              <AccordionTrigger className="p-4">
-                <div className="flex flex-row gap-2 items-center opacity-50">
-                  <PlusCircle size={20} />
-                  <h1 className="text-start text-xl">Add new Category</h1>
-                </div>
-              </AccordionTrigger>
-              <AccordionContent className="gap-2 flex flex-col p-4">
-                <FormLabel>Category name</FormLabel>
-                <Input
-                  placeholder="Enter category name"
-                  type="text"
-                  autoCapitalize="none"
-                  autoCorrect="off"
-                  {...form.register("name")}
-                />
-                <FormErrorLabel path="phone" />
-                <FormLabel className="mt-4">Category items</FormLabel>
-                <Button
-                  variant="outline"
-                  className="self-start"
-                  onClick={() => {
-                    form.setValue(
-                      `menu.${form.getValues().menu.length}`,
-                      initialMenu
-                    );
-                  }}
-                >
+            <div className="accordian-number flex flex-row gap-2 items-center">
+              <h1>1</h1>
+              <AccordionItem value="second-1" className="mt-5 mb-2 w-full">
+                <AccordionTrigger className="p-4">
                   <div className="flex flex-row gap-2 items-center opacity-50">
-                    <PlusCircle size={16} />
-                    <h1 className="text-start">Add Item</h1>
+                    <PlusCircle size={20} />
+                    <h1 className="text-start text-xl">Add new Category</h1>
                   </div>
-                </Button>
-                {values.menu.map((menu, i) => {
-                  return (
-                    <div
-                      className="menu-div flex flex-row border-2 p-2 gap-2"
-                      key={menu.name}
-                    >
-                      <div className="menu-image w-1/4">
-                        {menu.picture ? (
-                          <Image alt="meny image" src={menu.picture} />
-                        ) : (
+                </AccordionTrigger>
+                <AccordionContent className="gap-2 flex flex-col p-4">
+                  {/*  */}
+                  <FormLabel>Category name</FormLabel>
+                  <Input
+                    placeholder="Enter category name"
+                    type="text"
+                    {...form.register("name")}
+                  />
+                  <FormErrorLabel path="name" />
+
+                  <FormLabel className="mt-4">Category items</FormLabel>
+                  <Button
+                    variant="outline"
+                    className="self-start"
+                    onClick={() => {
+                      form.setValue(
+                        `menu.${form.getValues().menu.length}`,
+                        initialMenu
+                      );
+                    }}
+                  >
+                    <div className="flex flex-row gap-2 items-center opacity-50">
+                      <PlusCircle size={16} />
+                      <h1 className="text-start">Add Item</h1>
+                    </div>
+                  </Button>
+
+                  {values.menu.map((menu, i) => {
+                    return (
+                      <div
+                        className="menu-div flex flex-row border-2 p-2 gap-2"
+                        key={menu._id}
+                      >
+                        <div className="menu-image w-32">
                           <Button
                             variant="outline"
                             type="button"
-                            className="flex-grow h-full w-full gap-2 flex- flex-col"
+                            className="flex-grow h-full w-full relative"
+                            onClick={() => {
+                              const inp = document.getElementById(
+                                `input-${menu._id}`
+                              );
+                              if (inp) inp.click();
+                            }}
                           >
-                            <PlusCircle className="opacity-10" size={30} />
-                            <h1 className="opacity-10">Upload Picture</h1>
+                            {selectedPicture && (
+                              <div className="close-button absolute top-0 right-0">
+                                <Button
+                                  className="p-0.5 size-fit"
+                                  variant="default"
+                                  onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setselectedPicture(undefined);
+                                    form.setValue(
+                                      `menu.${i}.picture`,
+                                      undefined
+                                    );
+                                  }}
+                                >
+                                  <X size={16} />
+                                </Button>
+                              </div>
+                            )}
+                            <Input
+                              id={`input-${menu._id}`}
+                              type="file"
+                              className={`hidden absolute top-[1000px]`}
+                              // {...form.register(`menu.${i}.item_name`)}
+                              onChange={(e) => {
+                                if (e?.target?.files?.[0]) {
+                                  setselectedPicture(e?.target?.files?.[0]);
+                                  form.setValue(
+                                    `menu.${i}.picture`,
+                                    e.target.files[0]
+                                  );
+                                }
+                              }}
+                            />
+                            {menu.picture ? (
+                              <Image
+                                height={50}
+                                width={50}
+                                className="object-contain size-full max-h-[60px]"
+                                alt="menu image"
+                                src={
+                                  selectedPicture
+                                    ? URL.createObjectURL(selectedPicture)
+                                    : typeof menu.picture === "string"
+                                    ? menu.picture
+                                    : URL.createObjectURL(menu.picture)
+                                }
+                              />
+                            ) : (
+                              <div className="flex flex-col gap-2 justify-center items-center">
+                                <PlusCircle className="opacity-10" size={25} />
+                                <h1 className="opacity-50">Upload Picture</h1>
+                              </div>
+                            )}
+                          </Button>
+                        </div>
+                        <div className=" flex flex-col gap-2">
+                          <div className="menu-info flex flex-row gap-1">
+                            <div className="menu-info flex flex-col gap-1">
+                              <Input
+                                placeholder="Enter Item name"
+                                type="text"
+                                autoCapitalize="none"
+                                autoCorrect="off"
+                                {...form.register(`menu.${i}.item_name`)}
+                              />
+                              <FormErrorLabel path={`menu.${i}.item_name`} />
+                            </div>
+
+                            <div className="menu-info flex flex-col gap-1">
+                              <Input
+                                placeholder="Enter Item price"
+                                type="number"
+                                {...form.register(`menu.${i}.price`)}
+                              />
+                              <FormErrorLabel path={`menu.${i}.price`} />
+                            </div>
+                          </div>
+
+                          <div className="menu-info flex flex-row gap-1">
+                            <div className="menu-info flex flex-col gap-1">
+                              <Input
+                                placeholder="Enter Item description"
+                                type="text"
+                                autoCapitalize="none"
+                                autoCorrect="off"
+                                {...form.register(`menu.${i}.desc`)}
+                              />
+                              <FormErrorLabel path={`menu.${i}.desc`} />
+                            </div>
+                            {/* // <div className="bg-[green]-300 bg-[red]-300 bg-[orange]-300"></div> */}
+
+                            <div className="menu-info flex flex-col gap-1">
+                              <div className="menu-info flex flex-row gap-1">
+                                {foodTypeVegNonVeg.map(
+                                  ({ type, color }, index) => (
+                                    <Button
+                                      onClick={() => {
+                                        form.setValue(`menu.${i}.type`, type);
+                                        setselectefvegNonVegOptionType(type);
+                                      }}
+                                      variant={
+                                        selectefvegNonVegOptionType === type
+                                          ? "selected"
+                                          : "outline"
+                                      }
+                                      key={type + index}
+                                      type="button"
+                                      className="capitalize flex flex-row gap-1 mt-0.5"
+                                    >
+                                      <div
+                                        className={`border-[1px] border-${color}-500 rounded-sm p-[2px]`}
+                                      >
+                                        <div
+                                          className={`h-2 w-2 rounded-full bg-${color}-500`}
+                                        />
+                                      </div>
+                                      {type}
+                                    </Button>
+                                  )
+                                )}
+                              </div>
+                              <FormErrorLabel path={`menu.${i}.type`} />
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {/* //save cateroy button  */}
+
+                  <Button variant="outline" className="self-end">
+                    <div className="flex flex-row gap-2 items-center opacity-50">
+                      <Check size={16} />
+                      <h1 className="text-start">Save Categoty</h1>
+                    </div>
+                  </Button>
+                </AccordionContent>
+              </AccordionItem>
+            </div>
+
+            {/* //edit category componnet  */}
+
+            {categoriesList.map(({ _id, isEditable, ...category }, i) => {
+              return (
+                <div
+                  key={_id}
+                  className="accordian-number flex flex-row gap-2 items-center"
+                >
+                  <h1>{i + 2}</h1>
+                  <AccordionItem
+                    value={category.name + i}
+                    className="mt-5 mb-2 w-full"
+                  >
+                    <AccordionTrigger className="p-4">
+                      <div className="flex flex-row gap-2 items-center">
+                        {isEditable ? (
+                          <h1 className="category-item min-w-24 max-w-24 text-ellipsis">
+                            Editing
+                          </h1>
+                        ) : (
+                          <div className="category-item min-w-24 max-w-24 text-ellipsis capitalize">
+                            {category.name}
+                          </div>
+                        )}
+
+                        {isEditable ? (
+                          <Button
+                            type="button"
+                            variant="simple"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              handleEditCategory(_id, "isEditable", false);
+                            }}
+                          >
+                            <Check size={18} color="black" />
+                          </Button>
+                        ) : (
+                          <Button
+                            type="button"
+                            variant="simple"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              e.preventDefault();
+                              handleEditCategory(_id, "isEditable", true);
+                            }}
+                          >
+                            <Edit size={18} color="black" />
                           </Button>
                         )}
                       </div>
-                      <div className=" flex flex-col gap-2">
-                        <div className="menu-info flex flex-row gap-1">
-                          <Input
-                            placeholder="Enter Item name"
-                            type="text"
-                            autoCapitalize="none"
-                            autoCorrect="off"
-                            {...form.register(`menu.${i}.name`)}
-                          />
-                          <FormErrorLabel path={`menu.${i}.name`} />
-                          <Input
-                            placeholder="Enter Item price"
-                            type="number"
-                            autoCapitalize="none"
-                            autoCorrect="off"
-                            {...form.register(`menu.${i}.price`)}
-                          />
-                          <FormErrorLabel path={`menu.${i}.price`} />
-                        </div>
-
-                        <div className="menu-info flex flex-row gap-1">
-                          <Input
-                            placeholder="Enter Item description"
-                            type="text"
-                            autoCapitalize="none"
-                            autoCorrect="off"
-                            {...form.register(`menu.${i}.desc`)}
-                          />
-                          <FormErrorLabel path={`menu.${i}.name`} />
-                          {/* // <div className="bg-[green]-300 bg-[red]-300 bg-[orange]-300"></div> */}
-                          {foofType.map(({ type, color }) => (
-                            <Button
-                              onClick={() => {
-                                form.setValue(`menu.${i}.type`, type);
-                              }}
-                              variant="outline"
-                              key={type}
-                              type="button"
-                              className="capitalize flex flex-row gap-1 bg-"
-                            >
-                              <div
-                                className={`border-[1px] border-${color}-500 rounded-sm p-[2px]`}
-                              >
-                                <div
-                                  className={`h-2 w-2 rounded-full bg-${color}-500`}
-                                />
-                              </div>
-                              {type}
-                            </Button>
-                          ))}
-
-                          <FormErrorLabel path={`menu.${i}.price`} />
-                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="gap-2 flex flex-col p-4">
+                      <div>
+                        <FormLabel>Category name</FormLabel>
+                        <Input
+                          disabled={!isEditable}
+                          value={category.name}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            handleEditCategory(_id, "name", e.target.value);
+                          }}
+                        />
                       </div>
-                    </div>
-                  );
-                })}
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="self-end"
-                  onClick={() => {
-                    setCategoriesList((prev) => {
-                      return [
-                        ...prev,
-                        { name: values.name, menu: values.menu },
-                      ];
-                    });
-                  }}
-                >
-                  <div className="flex flex-row gap-2 items-center opacity-50">
-                    <Check size={16} />
-                    <h1 className="text-start">Save Categoty</h1>
-                  </div>
-                </Button>
-              </AccordionContent>
-            </AccordionItem>
-
-            {categoriesList.map((category, i) => {
-              return (
-                <AccordionItem
-                  key={category.name}
-                  value={category.name + i}
-                  className="mt-5 mb-2"
-                >
-                  <AccordionTrigger className="p-4">
-                    {category.isEditable ? (
-                      <></>
-                    ) : (
-                      <div className="category-item" key={category.name}>
-                        {category.name}
-                      </div>
-                    )}
-                    {category.isEditable ? (
-                      <Button variant="outline">
-                        <Check size={20} />
-                        <Check size={20} />
-                      </Button>
-                    ) : (
                       <Button
+                        disabled={!isEditable}
                         variant="outline"
+                        className="self-start"
                         onClick={() => {
-                          setCategoriesList((prev) => [...prev]);
+                          const clone = [...categoriesList];
+                          clone[i].menu.unshift(initialMenu);
+                          setCategoriesList(clone);
                         }}
                       >
-                        <Edit size={20} />
+                        <div className="flex flex-row gap-2 items-center opacity-50">
+                          <PlusCircle size={16} />
+                          <h1 className="text-start">Add Item</h1>
+                        </div>
                       </Button>
-                    )}
-                  </AccordionTrigger>
-                  <AccordionContent></AccordionContent>
-                </AccordionItem>
+                      {category.menu.map((menu, i) => {
+                        return (
+                          <div
+                            className="menu-div flex flex-row border-2 p-2 gap-2"
+                            key={menu._id}
+                          >
+                            <div
+                              className="menu-image w-32 flex
+                               flex-col justify-center items-center"
+                            >
+                              <Button
+                                disabled={!isEditable}
+                                variant="outline"
+                                type="button"
+                                className="flex-grow h-full w-full relative"
+                                onClick={() => {
+                                  const inp = document.getElementById(
+                                    `input-${menu._id}`
+                                  );
+                                  if (inp) inp.click();
+                                }}
+                              >
+                                {menu.picture && (
+                                  <div className="close-button absolute top-0 right-0">
+                                    <Button
+                                      className="p-0.5 size-fit"
+                                      variant="default"
+                                      type="button"
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        updateMenuOnChange(
+                                          _id,
+                                          category.menu,
+                                          menu._id,
+                                          "picture",
+                                          undefined
+                                        );
+                                      }}
+                                    >
+                                      <X size={16} />
+                                    </Button>
+                                  </div>
+                                )}
+                                <Input
+                                  id={`input-${menu._id}`}
+                                  type="file"
+                                  className={`hidden absolute top-[1000px]`}
+                                  onChange={(e) => {
+                                    if (e?.target?.files?.[0]) {
+                                      updateMenuOnChange(
+                                        _id,
+                                        category.menu,
+                                        menu._id,
+                                        "picture",
+                                        e.target.files[0]
+                                      );
+                                    }
+                                  }}
+                                />
+                                {menu.picture ? (
+                                  <Image
+                                    height={50}
+                                    width={50}
+                                    alt="menu image"
+                                    className="object-contain size-full max-h-[60px]"
+                                    src={
+                                      typeof menu.picture === "string"
+                                        ? menu.picture
+                                        : URL.createObjectURL(menu.picture)
+                                    }
+                                  />
+                                ) : (
+                                  <>
+                                    <PlusCircle
+                                      className="opacity-10"
+                                      size={30}
+                                    />
+                                    <h1 className="opacity-50">
+                                      Upload Picture
+                                    </h1>
+                                  </>
+                                )}
+                              </Button>
+                            </div>
+                            <div className=" flex flex-col gap-2">
+                              <div className="menu-info flex flex-row gap-1">
+                                <Input
+                                  disabled={!isEditable}
+                                  placeholder="Enter Item name"
+                                  type="text"
+                                  value={menu.item_name}
+                                  name="item_name"
+                                  onChange={(e) => {
+                                    updateMenuOnChange(
+                                      _id,
+                                      category.menu,
+                                      menu._id,
+                                      "item_name",
+                                      e.target.value
+                                    );
+                                  }}
+                                />
+
+                                <Input
+                                  disabled={!isEditable}
+                                  placeholder="Enter Item price"
+                                  type="number"
+                                  value={menu.price}
+                                  onChange={(e) => {
+                                    updateMenuOnChange(
+                                      _id,
+                                      category.menu,
+                                      menu._id,
+                                      "price",
+                                      e.target.value
+                                    );
+                                  }}
+                                />
+                              </div>
+
+                              <div className="menu-info flex flex-row gap-1">
+                                <Input
+                                  disabled={!isEditable}
+                                  placeholder="Enter Item description"
+                                  type="text"
+                                  value={menu.desc}
+                                  onChange={(e) => {
+                                    updateMenuOnChange(
+                                      _id,
+                                      category.menu,
+                                      menu._id,
+                                      "desc",
+                                      e.target.value
+                                    );
+                                  }}
+                                />
+
+                                {/* // <div className="bg-[green]-300 bg-[red]-300 bg-[orange]-300"></div> */}
+
+                                <div className="menu-info flex flex-col gap-1">
+                                  <div className="menu-info flex flex-row gap-1">
+                                    {foodTypeVegNonVeg.map(
+                                      ({ type, color }, index) => (
+                                        <Button
+                                          disabled={!isEditable}
+                                          onClick={() => {
+                                            updateMenuOnChange(
+                                              _id,
+                                              category.menu,
+                                              menu._id,
+                                              "type",
+                                              type
+                                            );
+                                          }}
+                                          variant={
+                                            menu.type === type
+                                              ? "selected"
+                                              : "outline"
+                                          }
+                                          key={type + index}
+                                          type="button"
+                                          className="capitalize flex flex-row gap-1 mt-0.5"
+                                        >
+                                          <div
+                                            className={`border-[1px] border-${color}-500 rounded-sm p-[2px]`}
+                                          >
+                                            <div
+                                              className={`h-2 w-2 rounded-full bg-${color}-500`}
+                                            />
+                                          </div>
+                                          {type}
+                                        </Button>
+                                      )
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </AccordionContent>
+                  </AccordionItem>
+                </div>
               );
             })}
           </Accordion>
         </div>
-        <Button>Save</Button>
+        <Button onClick={handleStep2finalsave} type="button">
+          Save
+        </Button>
       </form>
     </Form>
   );
 };
+
 const ThirdStep = ({}: { step: number }) => {
   return (
     <div className="first flex flex-col gap-4">

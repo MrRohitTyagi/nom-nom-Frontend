@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { deleteToken, getToken } from "./cookie";
 import { updateUser, getUser } from "@/gateways/userGateway";
 import { updateShop } from "@/gateways/shopGateways";
+import { secondStepType } from "@/app/manage-restraunt/page";
 
 export interface userType {
   _id?: string;
@@ -113,7 +114,7 @@ interface shopInterface {
   regestrationStep?: number;
   isOpen?: boolean;
   timing?: { opensAt: string; closesAt: string };
-  menu?: any; //TODO
+  categories?: secondStepType[];
   averageCTC?: string;
   phone?: string;
   tel?: string;
