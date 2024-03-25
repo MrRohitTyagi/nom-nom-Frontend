@@ -441,9 +441,11 @@ const SecondStep = ({}: { step: number }) => {
               <h1>1</h1>
               <AccordionItem value="second-1" className="mt-5 mb-2 w-full">
                 <AccordionTrigger className="p-4">
-                  <div className="flex flex-row gap-2 items-center opacity-50">
+                  <div className="flex flex-row gap-2 items-center ">
                     <PlusCircle size={20} />
-                    <h1 className="text-start text-xl">Add new Category</h1>
+                    <h1 className="text-start even:opacity-50">
+                      Add new Category
+                    </h1>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="gap-2 flex flex-col p-4">
@@ -476,10 +478,10 @@ const SecondStep = ({}: { step: number }) => {
                   {values.menu.map((menu, i) => {
                     return (
                       <div
-                        className="menu-div flex flex-row border-2 p-2 gap-2"
+                        className="menu-div flex flex-col lg:flex-row border-2 p-2 gap-2"
                         key={menu._id}
                       >
-                        <div className="menu-image w-32">
+                        <div className="menu-image w-32 min-h-32">
                           <Button
                             variant="outline"
                             type="button"
@@ -547,8 +549,9 @@ const SecondStep = ({}: { step: number }) => {
                             )}
                           </Button>
                         </div>
-                        <div className=" flex flex-col gap-2">
-                          <div className="menu-info flex flex-row gap-1">
+
+                        <div className="flex flex-col gap-2">
+                          <div className="menu-info flex flex-col lg:flex-row xl:flex-row gap-1">
                             <div className="menu-info flex flex-col gap-1">
                               <Input
                                 placeholder="Enter Item name"
@@ -562,17 +565,6 @@ const SecondStep = ({}: { step: number }) => {
 
                             <div className="menu-info flex flex-col gap-1">
                               <Input
-                                placeholder="Enter Item price"
-                                type="number"
-                                {...form.register(`menu.${i}.price`)}
-                              />
-                              <FormErrorLabel path={`menu.${i}.price`} />
-                            </div>
-                          </div>
-
-                          <div className="menu-info flex flex-row gap-1">
-                            <div className="menu-info flex flex-col gap-1">
-                              <Input
                                 placeholder="Enter Item description"
                                 type="text"
                                 autoCapitalize="none"
@@ -581,6 +573,18 @@ const SecondStep = ({}: { step: number }) => {
                               />
                               <FormErrorLabel path={`menu.${i}.desc`} />
                             </div>
+                          </div>
+
+                          <div className="menu-info flex flex-row gap-1">
+                            <div className="menu-info flex flex-col gap-1">
+                              <Input
+                                placeholder="Price"
+                                type="number"
+                                {...form.register(`menu.${i}.price`)}
+                              />
+                              <FormErrorLabel path={`menu.${i}.price`} />
+                            </div>
+
                             {/* // <div className="bg-[green]-300 bg-[red]-300 bg-[orange]-300"></div> */}
 
                             <div className="menu-info flex flex-col gap-1">
@@ -633,8 +637,7 @@ const SecondStep = ({}: { step: number }) => {
               </AccordionItem>
             </div>
 
-            {/* //edit category componnet  */}
-
+            {/* //edit category componnet  ----------------------------------------------------------------------*/}
             {categoriesList.map(({ _id, isEditable, ...category }, i) => {
               return (
                 <div
@@ -649,11 +652,11 @@ const SecondStep = ({}: { step: number }) => {
                     <AccordionTrigger className="p-4">
                       <div className="flex flex-row gap-2 items-center">
                         {isEditable ? (
-                          <h1 className="category-item min-w-24 max-w-24 text-ellipsis">
+                          <h1 className="underline category-item min-w-24 max-w-24 text-ellipsis">
                             Editing
                           </h1>
                         ) : (
-                          <div className="category-item min-w-24 max-w-24 text-ellipsis capitalize">
+                          <div className="opacity-50 category-item min-w-24 max-w-24 text-ellipsis capitalize">
                             {category.name}
                           </div>
                         )}
@@ -716,11 +719,11 @@ const SecondStep = ({}: { step: number }) => {
                       {category.menu.map((menu, i) => {
                         return (
                           <div
-                            className="menu-div flex flex-row border-2 p-2 gap-2"
+                            className="menu-div flex flex-col lg:flex-row border-2 p-2 gap-2"
                             key={menu._id}
                           >
                             <div
-                              className="menu-image w-32 flex
+                              className="menu-image w-32 min-h-32 flex
                                flex-col justify-center items-center"
                             >
                               <Button
@@ -819,24 +822,6 @@ const SecondStep = ({}: { step: number }) => {
 
                                 <Input
                                   disabled={!isEditable}
-                                  placeholder="Enter Item price"
-                                  type="number"
-                                  value={menu.price}
-                                  onChange={(e) => {
-                                    updateMenuOnChange(
-                                      _id,
-                                      category.menu,
-                                      menu._id,
-                                      "price",
-                                      e.target.value
-                                    );
-                                  }}
-                                />
-                              </div>
-
-                              <div className="menu-info flex flex-row gap-1">
-                                <Input
-                                  disabled={!isEditable}
                                   placeholder="Enter Item description"
                                   type="text"
                                   value={menu.desc}
@@ -846,6 +831,24 @@ const SecondStep = ({}: { step: number }) => {
                                       category.menu,
                                       menu._id,
                                       "desc",
+                                      e.target.value
+                                    );
+                                  }}
+                                />
+                              </div>
+
+                              <div className="menu-info flex flex-row gap-1">
+                                <Input
+                                  disabled={!isEditable}
+                                  placeholder="Enter Item price"
+                                  type="number"
+                                  value={menu.price}
+                                  onChange={(e) => {
+                                    updateMenuOnChange(
+                                      _id,
+                                      category.menu,
+                                      menu._id,
+                                      "price",
                                       e.target.value
                                     );
                                   }}
